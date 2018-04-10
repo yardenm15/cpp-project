@@ -9,26 +9,48 @@
 #define CELL_H_
 
 #include <iostream>
-#define FIRST_PLAYER 1
-#define SECOND_PLAYER 2
+#define NO_PLAYER 0
+#define PLAYER_ONE 1
+#define PLAYER_TWO 2
+#define ROCK 0
+#define PAPER 1
+#define SCISSORS 2
+#define BOMB 3
+#define FLAG 4
+#define JOKER 5
 
 using namespace std;
 
-enum class Piece { None, Rock, Paper, Scissors, Bomb, Joker_Rock,
-	Joker_Paper, Joker_Scissors, Joker_Bomb, Flag };
+enum class RPC {
+	None = -1, Rock, Paper, Scissors, Bomb, Flag
+};
 
-class cell {
-	
-	Piece Player1;
-	Piece Player2;
-
+class Piece {
+	RPC rpc;
+	bool isJoker;
 public:
-	explicit cell() : Player1(Piece::None), Player2(Piece::None) {}
-	cell(const cell&) = delete;
-	cell& operator=(const cell&) = delete;
-	void updateCell(Piece newPiece, int playerNumber);
-	Piece getPlayer1Piece();
-	Piece getPlayer2Piece();
+	explicit Piece() : rpc(RPC::None), isJoker(false) {}
+	explicit Piece(RPC r) : rpc(r), isJoker(false) {}
+	Piece(const Piece&);
+	Piece& operator=(const Piece& other);
+	void setrpc(RPC r);
+	RPC getrpc() const;
+	void setJoker(bool b);
+	bool getisJoker() const;
+	friend std::ostream& operator<<(std::ostream& o, const Piece& p);
+};
+
+class Cell {
+	Piece currentPiece;
+	int playerOwn;
+public:
+	explicit Cell() : currentPiece(Piece()), playerOwn(NO_PLAYER) {}
+	//explicit Cell(Piece pi) : currentPiece(pi), playerOwn(NO_PLAYER) {}
+	Cell(const Cell&) = delete;
+	Cell& operator=(const Cell&) = delete;
+	void setCell(Piece newPiece, int playerNumber = NO_PLAYER);
+	Piece getCellPiece();
+	int getPlayerOwning();
 };
 
 #endif
