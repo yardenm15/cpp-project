@@ -19,7 +19,8 @@
 #define FLAG 4
 #define JOKER 5
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 enum class RPC {
 	None = -1, Rock, Paper, Scissors, Bomb, Flag
@@ -31,26 +32,25 @@ class Piece {
 public:
 	explicit Piece() : rpc(RPC::None), isJoker(false) {}
 	explicit Piece(RPC r) : rpc(r), isJoker(false) {}
-	Piece(const Piece&);
-	Piece& operator=(const Piece& other);
-	void setrpc(RPC r);
+	explicit Piece(RPC r, bool b) : rpc(r), isJoker(b) {}
+	Piece(const Piece& p);
+	void setrpc(const RPC r);
 	RPC getrpc() const;
-	void setJoker(bool b);
+	void setJoker(const bool b);
 	bool getisJoker() const;
 	friend std::ostream& operator<<(std::ostream& o, const Piece& p);
 };
 
 class Cell {
-	Piece currentPiece;
+	Piece piece;
 	int playerOwn;
 public:
-	explicit Cell() : currentPiece(Piece()), playerOwn(NO_PLAYER) {}
-	//explicit Cell(Piece pi) : currentPiece(pi), playerOwn(NO_PLAYER) {}
+	explicit Cell() : piece(Piece()), playerOwn(NO_PLAYER) {}
 	Cell(const Cell&) = delete;
 	Cell& operator=(const Cell&) = delete;
 	void setCell(Piece newPiece, int playerNumber = NO_PLAYER);
-	Piece getCellPiece();
-	int getPlayerOwning();
+	Piece getCellPiece() const;
+	int getPlayerOwning() const;
 };
 
 #endif

@@ -5,58 +5,58 @@
 *  Author: Oleg S.
 */
 
-//#include "stdafx.h"
 #include "gameStatus.h"
-#include "cell.h"
 #include <fstream>
+#define PLAYER_ONE 1
+#define PLAYER_TWO 2
 
-status::status() {
-	isPositioningPhase = true;
+PossibleStatus playerStatus::getPlayerStatus() const {
+	return status;
 }
 
-PossibleStatus playerStatus::getPlayerStatus() {
-	return statt;
-}
-
-void playerStatus::setPlayerStatus(PossibleStatus st, int lineNum, string li) {
-	statt = st;
+void playerStatus::setPlayerStatus(const PossibleStatus st, int lineNum, const string li) {
+	status = st;
 	lineNumber = lineNum;
 	line = li;
 }
 
-int playerStatus::getlineNumber() {
+int playerStatus::getlineNumber() const {
 	return lineNumber;
 }
 
-string playerStatus::getline() {
+string playerStatus::getline() const {
 	return line;
 }
 
-PossibleStatus status::getStatus(int playerNumber) {
+Status::Status() {
+	isPositioningPhase = true;
+}
+
+PossibleStatus Status::getStatus(int playerNumber) const {
 	return playerNumber == PLAYER_ONE ? playerOne.getPlayerStatus() : playerTwo.getPlayerStatus();
 }
 
-void status::setStatus(int playerNumber, PossibleStatus st, int lineNum, string li) {
+void Status::setStatus(int playerNumber, PossibleStatus st, int lineNum, string li) {
 	if (playerNumber == PLAYER_ONE)
 		playerOne.setPlayerStatus(st, lineNum, li);
 	else
 		playerTwo.setPlayerStatus(st, lineNum, li);
 }
 
-bool status::getIsPositioningPhase() {
+bool Status::getIsPositioningPhase() const {
 	return isPositioningPhase;
 }
 
-void status::setIsPositioningPhase(bool b) {
+void Status::setIsPositioningPhase(bool b) {
 	isPositioningPhase = b;
 }
 
-void status::printStatusToFile(ofstream& outputFile) {
-	
+void Status::printStatusToFile(ofstream& outputFile) const {
+
 	//tie - error in both players positioning files
 	if (playerOne.getPlayerStatus() == PossibleStatus::input_File_Error && playerTwo.getPlayerStatus() == PossibleStatus::input_File_Error) {
 		outputFile << "Winner: 0" << endl;
-		outputFile << "Reason: " << "Bad Positioning input file for both players - player 1: line " << playerOne.getlineNumber() + 1 << ", player 2: line " << playerOne.getlineNumber() + 1 << endl;
+		outputFile << "Reason: " << "Bad Positioning input file for both players - player 1: line " << playerOne.getlineNumber() + 1 << ", player 2: line " << playerTwo.getlineNumber() + 1 << endl;
 	}
 
 	//tie - both players lost their flags in the positioning phase
@@ -74,12 +74,12 @@ void status::printStatusToFile(ofstream& outputFile) {
 	//player one has lost
 	else if (playerOne.getPlayerStatus() != PossibleStatus::Valid) {
 		outputFile << "Winner: 2" << endl;
-		switch (status::playerOne.getPlayerStatus()) {
+		switch (Status::playerOne.getPlayerStatus()) {
 			case PossibleStatus::input_File_Error:
-				outputFile << "Bad Positioning input file for player " << PLAYER_ONE << " - line " << playerOne.getlineNumber() + 1 << endl;
+				outputFile << "Bad Positioning input file for player " << PLAYER_ONE << " - line " << playerOne.getlineNumber() << endl;
 				break;
 			case PossibleStatus::Move_File_Error:
-				outputFile << "Bad Moves input file for player " << PLAYER_ONE << " - line " << playerOne.getlineNumber() + 1 << endl;
+				outputFile << "Bad Moves input file for player " << PLAYER_ONE << " - line " << playerOne.getlineNumber() << endl;
 				break;
 			case PossibleStatus::All_Flags_Captured:
 				outputFile << "All flags of the opponent are captured" << endl;
@@ -93,12 +93,12 @@ void status::printStatusToFile(ofstream& outputFile) {
 	//player two has lost
 	else {
 		outputFile << "Winner: 1" << endl;
-		switch (status::playerTwo.getPlayerStatus()) {
+		switch (Status::playerTwo.getPlayerStatus()) {
 			case PossibleStatus::input_File_Error:
-				outputFile << "Bad Positioning input file for player " << PLAYER_TWO << " - line " << playerTwo.getlineNumber() + 1 << endl;
+				outputFile << "Bad Positioning input file for player " << PLAYER_TWO << " - line " << playerTwo.getlineNumber() << endl;
 				break;
 			case PossibleStatus::Move_File_Error:
-				outputFile << "Bad Moves input file for player " << PLAYER_TWO << " - line " << playerOne.getlineNumber() + 1 << endl;
+				outputFile << "Bad Moves input file for player " << PLAYER_TWO << " - line " << playerTwo.getlineNumber() << endl;
 				break;
 			case PossibleStatus::All_Flags_Captured:
 				outputFile << "All flags of the opponent are captured" << endl;

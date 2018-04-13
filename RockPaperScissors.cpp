@@ -5,9 +5,7 @@
 *  Author: Oleg S.
 */
 
-//todo: #include "stdafx.h" todo:whats this header?
 #include "RockPaperScissors.h"
-#include "gameStatus.h"
 
 RockPaperScissors::RockPaperScissors() {
 
@@ -76,88 +74,65 @@ RockPaperScissors::~RockPaperScissors() {
 	}
 }
 
-bool isPositionFormatCorrect(vector<string> tokens) {
-	//verify single letter in each token
-	for (int i = 0; i < tokens.size(); ++i) {
-		if (tokens[i].length() != 1)
-			return false;
-	}
-	//verify correct format for <PIECE_CHAR> <X> <Y>
-	if (tokens.size() == 3) {
-		if (tokens[0].at(0) == 'R' || tokens[0].at(0) == 'P' || tokens[0].at(0) == 'S' || tokens[0].at(0) == 'B' || tokens[0].at(0) == 'F') {
-			if (toDigit(tokens[1].at(0)) > 0 && toDigit(tokens[1].at(0)) < NUM_OF_ROWS + 1) {
-				if (toDigit(tokens[2].at(0)) > 0 && toDigit(tokens[2].at(0)) < NUM_OF_COLS + 1)
-					return true;
-			}
-		}
-	}
-	//verify correct format for J <X> <Y> <PIECE_CHAR>
-	if (tokens.size() == 4) {
-		if (tokens[0].at(0) == 'J') {
-			if (tokens[3].at(0) == 'R' || tokens[3].at(0) == 'P' || tokens[3].at(0) == 'S' || tokens[3].at(0) == 'B') {
-				if (toDigit(tokens[1].at(0)) > 0 && toDigit(tokens[1].at(0)) < NUM_OF_ROWS + 1) {
-					if (toDigit(tokens[2].at(0)) > 0 && toDigit(tokens[2].at(0)) < NUM_OF_COLS + 1)
-						return true;
-				}
-			}
-		}
-	}
-	return false;
-}
-
-int RockPaperScissors::getPlayerOwningCell(int row, int col) {
+int RockPaperScissors::getPlayerOwningCell(int row, int col) const {
 	return board[row][col].getPlayerOwning();
 }
 
-bool RockPaperScissors::isMoveFormatCorrect(vector<string> tokens) {
-
-	//verify number of letters in each token
-	if (tokens.size() == 4 || tokens.size() == 8) {
-		for (int i = 0; i < tokens.size(); ++i) {
-			if (i == 4)
-				continue;
-			if (tokens[i].length() != 1)
-				return false;
-		}
-		if (tokens.size() == 8) {
-			if (tokens[4].size() != 2)
-				return false;
-		}
-	}
-	//wrong length
-	else
-		return false;
-
-
-
-	//verify correct format for <FROM_X> <FROM_Y> <TO_X> <TO_Y> J: <Joker_X> <Joker_Y> <NEW_REP>
-	for (int i = 0; i < tokens.size(); ++i) {
-		if (i == 4) {
-			if (tokens[i].at(0) != 'J' || tokens[i].at(0) != ':')
-				return false;
-		}
-		else if (i == 0 || i == 2 || i == 5) {
-			if (toDigit(tokens[i].at(0)) < 0 || toDigit(tokens[i].at(0)) > NUM_OF_ROWS) {
-				return false;
-			}
-		}
-		else {// i == 1 || i == 3 || i == 6
-			if (toDigit(tokens[i].at(0)) < 0 || toDigit(tokens[i].at(0)) > NUM_OF_COLS) {
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
-int RockPaperScissors::getNumberOfPiecesLeftToPlace(int playerNumber, Piece p) {
-	if (playerNumber == 1)
+int RockPaperScissors::getNumberOfPiecesLeftToPlace(int playerNumber, const Piece& p) const {
+	if (playerNumber == 1) {
+		if(p.getisJoker() == true)
+			return piecesToPlace_Player1[JOKER];
 		return piecesToPlace_Player1[(int)p.getrpc()];
-	return piecesToPlace_Player2[(int)p.getrpc()];
+	}
+	else {//player 2
+		if (p.getisJoker() == true)
+			return piecesToPlace_Player2[JOKER];
+		return piecesToPlace_Player2[(int)p.getrpc()];
+	}
 }
 
-void RockPaperScissors::setPosition(int lineNumber, string& line, int playerNumber, status& currentStatus) {
+Piece RockPaperScissors::getPieceFromVector(const vector<string>& tokens) const{
+	Piece p;
+	//format: <PIECE_CHAR> <X> <Y>
+	switch (tokens[0].at(0)) {
+		case 'R':
+			p.setrpc(RPC::Rock);
+			break;
+		case 'P':
+			p.setrpc(RPC::Paper);
+			break;
+		case 'S':
+			p.setrpc(RPC::Scissors);
+			break;
+		case 'B':
+			p.setrpc(RPC::Bomb);
+			break;
+		case 'F':
+			p.setrpc(RPC::Flag);
+			break;
+		case 'J':
+			p.setJoker(true);
+			//format: J <X> <Y> <PIECE_CHAR>
+			switch (tokens[3].at(0)) {
+				case 'R':
+					p.setrpc(RPC::Rock);
+					break;
+				case 'P':
+					p.setrpc(RPC::Paper);
+					break;
+				case 'S':
+					p.setrpc(RPC::Scissors);
+					break;
+				case 'B':
+					p.setrpc(RPC::Bomb);
+					break;
+			}
+			break;
+	}
+	return p;
+}
+
+void RockPaperScissors::setPosition(int lineNumber, const string& line, int playerNumber, Status& currentStatus) {
 	Piece p;
 	//split string by white spaces
 	istringstream buf(line);
@@ -165,42 +140,7 @@ void RockPaperScissors::setPosition(int lineNumber, string& line, int playerNumb
 	vector<string> tokens(beg, end);
 
 	if (isPositionFormatCorrect(tokens)) {
-		//format: <PIECE_CHAR> <X> <Y>
-		switch (tokens[0].at(0)) {
-			case 'R':
-				p.setrpc(RPC::Rock);
-				break;
-			case 'P':
-				p.setrpc(RPC::Paper);
-				break;
-			case 'S':
-				p.setrpc(RPC::Scissors);
-				break;
-			case 'B':
-				p.setrpc(RPC::Bomb);
-				break;
-			case 'F':
-				p.setrpc(RPC::Flag);
-				break;
-			case 'J':
-				p.setJoker(true);
-				//format: J <X> <Y> <PIECE_CHAR>
-				switch (tokens[3].at(0)) {
-					case 'R':
-						p.setrpc(RPC::Rock);
-						break;
-					case 'P':
-						p.setrpc(RPC::Paper);
-						break;
-					case 'S':
-						p.setrpc(RPC::Scissors);
-						break;
-					case 'B':
-						p.setrpc(RPC::Bomb);
-						break;
-				}
-				break;
-		}
+		p = getPieceFromVector(tokens);
 	}
 	//illegal line
 	else {
@@ -211,15 +151,15 @@ void RockPaperScissors::setPosition(int lineNumber, string& line, int playerNumb
 		currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, lineNumber + 1, line);
 		return;
 	}
-	int row = toDigit(tokens[1].at(0)) - 1;
-	int column = toDigit(tokens[2].at(0)) - 1;
 
-	if (!placePiece(playerNumber, p, board, row, column, 0, 0, line, currentStatus))
+	int row = stoi(tokens[1]) - 1;
+	int column = stoi(tokens[2]) - 1;
+
+	if (!placePiece(playerNumber, p, row, column, 0, 0, lineNumber, line, currentStatus))
 		return;
-
 }
 
-void RockPaperScissors::decreasePieceFromStock(int playerNumber, Piece p) {
+void RockPaperScissors::decreasePieceFromStock(int playerNumber, const Piece& p) {
 	if (playerNumber == PLAYER_ONE) {
 		if (p.getisJoker()) {
 			piecesToPlace_Player1[JOKER] -= 1;
@@ -238,7 +178,7 @@ void RockPaperScissors::decreasePieceFromStock(int playerNumber, Piece p) {
 	}
 }
 
-void RockPaperScissors::addJokerToJokerArray(int playerNumber, Piece p) {
+void RockPaperScissors::addJokerToJokerArray(int playerNumber, const Piece& p) {
 	for (int i = 0; i < NUM_OF_JOKERS; ++i) {
 		if (playerNumber == PLAYER_ONE) {
 			if (jokersOnBoard_Player1[i].getrpc() == RPC::None) {
@@ -255,7 +195,7 @@ void RockPaperScissors::addJokerToJokerArray(int playerNumber, Piece p) {
 	}
 }
 
-void RockPaperScissors::removeJokerFromJokerArray(int playerNumber, Piece p) {
+void RockPaperScissors::removeJokerFromJokerArray(int playerNumber, const Piece& p) {
 	for (int i = 0; i < NUM_OF_JOKERS; ++i) {
 		if (playerNumber == PLAYER_ONE) {
 			if (jokersOnBoard_Player1[i].getrpc() == p.getrpc()) {
@@ -274,7 +214,7 @@ void RockPaperScissors::removeJokerFromJokerArray(int playerNumber, Piece p) {
 	}
 }
 
-void RockPaperScissors::increasePieceOnBoard(int playerNumber, Piece p) {
+void RockPaperScissors::increasePieceOnBoard(int playerNumber, const Piece& p) {
 	if (playerNumber == PLAYER_ONE) {
 		if (p.getisJoker()) {
 			piecesOnBoard_Player1[JOKER] += 1;
@@ -292,7 +232,7 @@ void RockPaperScissors::increasePieceOnBoard(int playerNumber, Piece p) {
 			piecesOnBoard_Player2[(int)p.getrpc()] += 1;
 }
 
-void RockPaperScissors::decreasePieceFromBoard(int playerNumber, Piece p) {
+void RockPaperScissors::decreasePieceFromBoard(int playerNumber, const Piece& p) {
 	if (playerNumber == PLAYER_ONE) {
 		if (p.getisJoker()) {
 			piecesOnBoard_Player1[JOKER] -= 1;
@@ -310,33 +250,33 @@ void RockPaperScissors::decreasePieceFromBoard(int playerNumber, Piece p) {
 			piecesOnBoard_Player2[(int)p.getrpc()] -= 1;
 }
 
-bool RockPaperScissors::placePiece(int playerNumber, Piece p, Cell** board, int fromRow, int fromColumn, int toRow, int toColumn, string line, status& currentStatus) {
-	Cell& cel = board[fromRow][fromColumn];
+bool RockPaperScissors::placePiece(int playerNumber, const Piece& p, int fromRow, int fromColumn, int toRow, int toColumn, int lineNumber, const string& line, Status& currentStatus) {
+	Cell& fromCell = board[fromRow][fromColumn];
 
 	if (currentStatus.getIsPositioningPhase() == true) {
 		//empty valid cell
-		if (cel.getPlayerOwning() == NO_PLAYER) {
+		if (fromCell.getPlayerOwning() == NO_PLAYER) {
 			//player has pieces left
 			if (getNumberOfPiecesLeftToPlace(playerNumber, p) > 0) {
 				decreasePieceFromStock(playerNumber, p);//reduce 1 piece left for player
 				increasePieceOnBoard(playerNumber, p);//increase 1 piece on board for player
-				cel.setCell(p, playerNumber);
+				fromCell.setCell(p, playerNumber);
 				return true;
 			}
 			//illegal - out of pieces
 			else {
-				cout << "Player " << playerNumber << " had no more " << p << " pieces at line " << fromRow + 1 << ":" << endl \
+				cout << "Player " << playerNumber << " had no more " << p << " pieces at line " << lineNumber + 1 << ":" << endl \
 					<< line << endl;
 				currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, fromRow, line);
 				return false;
 			}
 		}
 		//illegal - same place piece
-		else if (cel.getPlayerOwning() == playerNumber) {
-			cout << "Player " << playerNumber << " tried to place a " << p << " in line " << fromRow + 1 << ":" << endl \
-			<< line << endl \
-			<< "where he already placed there a " << cel.getCellPiece() << " before." << endl;
-			currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, fromRow, line);
+		else if (fromCell.getPlayerOwning() == playerNumber) {
+			cout << "Player " << playerNumber << " tried to place a " << p << " in line " << lineNumber + 1 << ":" << endl \
+				<< line << endl \
+				<< "where he already placed there a " << fromCell.getCellPiece() << " before." << endl;
+			currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, lineNumber + 1, line);
 			return false;
 		}
 		//legal place - fight
@@ -346,39 +286,43 @@ bool RockPaperScissors::placePiece(int playerNumber, Piece p, Cell** board, int 
 			fight(fromRow, fromColumn, p, playerNumber, currentStatus);
 			return true;
 		}
-
 	}
 
 	else {//moving phase
-
-		//empty cell
-		if (cel.getPlayerOwning() == NO_PLAYER) {
-			setPieceAt(toRow, toColumn, playerNumber);//remove piece from original cell
-			cel.setCell(p, playerNumber);
+		Cell& toCell = board[toRow][toColumn];
+		Piece& newP = fromCell.getCellPiece();
+		//empty destination cell
+		if (toCell.getPlayerOwning() == NO_PLAYER) {
+			toCell.setCell(newP, playerNumber); //move piece to destination
+			fromCell.setCell(Piece()); //remove piece from source cell
 		}
 
-		//illegal - same place piece
-		else if (cel.getPlayerOwning() == playerNumber) {
-			cout << "Player " << playerNumber << " already has a piece at " << fromRow + 1 << "," << fromColumn + 1 << " when executing line " << fromRow + 1 << ":" << endl \
-				<< line << endl;
-			currentStatus.setStatus(playerNumber, PossibleStatus::Move_File_Error, fromRow, line);
-			return false;
-		}
 		//legal place - fight
 		else {
-			setPieceAt(toRow, toColumn, playerNumber);//remove piece from original cell
-			fight(fromRow, fromColumn, p, playerNumber, currentStatus);
+			fight(toRow, toColumn, newP, playerNumber, currentStatus);
+			setPieceAt(fromRow, fromColumn, NO_PLAYER);//remove piece from original cell
 		}
 	}
 	return true;
 }
 
-int RockPaperScissors::getFightResult(int x, int y) {
+int RockPaperScissors::getFightResult(int x, int y) const{
 	return strengthTable[x][y];
 }
 
-bool RockPaperScissors::checkWinningConditions(status& currentStatus) {
-	if (doPlayerHasMovablePieces(PLAYER_ONE) == false) {
+bool RockPaperScissors::checkWinningConditions(Status& currentStatus) const{
+	if (flagsLeft(PLAYER_ONE) == 0 && flagsLeft(PLAYER_TWO) == 0) {
+		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::All_Flags_Captured);
+		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::All_Flags_Captured);
+		return true;
+	}
+	else if (doPlayerHasMovablePieces(PLAYER_ONE) == false && doPlayerHasMovablePieces(PLAYER_TWO) == false) {
+		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::Out_Of_Moving_Pieces);
+		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::Out_Of_Moving_Pieces);
+		return true;
+	}
+
+	else if (doPlayerHasMovablePieces(PLAYER_ONE) == false) {
 		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::Out_Of_Moving_Pieces);
 		return true;
 	}
@@ -397,7 +341,7 @@ bool RockPaperScissors::checkWinningConditions(status& currentStatus) {
 	return false;
 }
 
-bool RockPaperScissors::aremovingJokers(int playerNumber) {
+bool RockPaperScissors::aremovingJokers(int playerNumber) const{
 	if (playerNumber == PLAYER_ONE) {
 		for (int i = 0; i < NUM_OF_JOKERS; ++i) {
 			if (jokersOnBoard_Player1[i].getrpc() == RPC::Rock || jokersOnBoard_Player1[i].getrpc() == RPC::Paper || jokersOnBoard_Player1[i].getrpc() == RPC::Scissors)
@@ -412,24 +356,23 @@ bool RockPaperScissors::aremovingJokers(int playerNumber) {
 	return false;
 }
 
-bool RockPaperScissors::doPlayerHasMovablePieces(int playerNumber) {
+bool RockPaperScissors::doPlayerHasMovablePieces(int playerNumber) const{
 	if (playerNumber == PLAYER_ONE) {
 		if (piecesOnBoard_Player1[ROCK] != 0 || piecesOnBoard_Player1[PAPER] != 0 || piecesOnBoard_Player1[SCISSORS] != 0 || aremovingJokers(playerNumber))
 			return true;
-		return false;
 	}
-	if (piecesOnBoard_Player2[ROCK] != 0 || piecesOnBoard_Player2[PAPER] != 0 || piecesOnBoard_Player2[SCISSORS] != 0 || aremovingJokers(playerNumber))
+	else if (piecesOnBoard_Player2[ROCK] != 0 || piecesOnBoard_Player2[PAPER] != 0 || piecesOnBoard_Player2[SCISSORS] != 0 || aremovingJokers(playerNumber))
 		return true;
 	return false;
 }
 
-int RockPaperScissors::flagsLeft(int playerNumber) {
+int RockPaperScissors::flagsLeft(int playerNumber) const{
 	if (playerNumber == PLAYER_ONE)
 		return piecesOnBoard_Player1[FLAG];
 	return piecesOnBoard_Player2[FLAG];
 }
 
-void RockPaperScissors::fight(int row, int column, Piece p, int attackingPlayerNumber, status& currentStatus) {
+void RockPaperScissors::fight(int row, int column, const Piece& p, int attackingPlayerNumber, Status& currentStatus) {
 	Cell& cel = board[row][column];
 	Piece existingPiece = cel.getCellPiece();
 	int battleResult = getFightResult((int)p.getrpc(), (int)existingPiece.getrpc());
@@ -452,11 +395,9 @@ void RockPaperScissors::fight(int row, int column, Piece p, int attackingPlayerN
 		decreasePieceFromBoard(PLAYER_TWO, p);
 		decreasePieceFromBoard(PLAYER_ONE, existingPiece);
 	}
-
-
 }
 
-void RockPaperScissors::startGame(string& firstPlayerInitFile, string& secondPlayerInitFile, string& firstPlayerMoveFile, string& secondPlayerMoveFile, status& currentStatus) {
+void RockPaperScissors::startGame(const string& firstPlayerInitFile, const string& secondPlayerInitFile, const string& firstPlayerMoveFile, const string& secondPlayerMoveFile, Status& currentStatus) {
 
 	//open input files
 	ifstream player1PositionFile(firstPlayerInitFile);
@@ -494,6 +435,8 @@ void RockPaperScissors::startGame(string& firstPlayerInitFile, string& secondPla
 	//processing position file for player 1
 	for (string line; getline(player1PositionFile, line); ++lineNumber) {
 		setPosition(lineNumber, line, PLAYER_ONE, currentStatus);
+		cout << line << endl;//to comment
+		printBoard();//to comment
 		if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid)
 			break;
 	}
@@ -503,6 +446,8 @@ void RockPaperScissors::startGame(string& firstPlayerInitFile, string& secondPla
 	//processing position file for player 2
 	for (string line; getline(player2PositionFile, line); ++lineNumber) {
 		setPosition(lineNumber, line, PLAYER_TWO, currentStatus);
+		cout << line << endl;//to comment
+		printBoard();//to comment
 		if (currentStatus.getStatus(PLAYER_TWO) != PossibleStatus::Valid)
 			break;
 	}
@@ -546,64 +491,71 @@ void RockPaperScissors::startGame(string& firstPlayerInitFile, string& secondPla
 	currentStatus.setIsPositioningPhase(false);
 
 	//processing move files for both players
-	bool moveFile1 = true;
-	bool moveFile2 = true;
+	bool moveFile1 = false;
+	bool moveFile2 = false;
 	lineNumber = 0;
 	string line1, line2;
-	getline(player1MoveFile, line1);
-	getline(player2MoveFile, line2);
+
+	if (getline(player1MoveFile, line1))
+		moveFile1 = true;
+	if (getline(player2MoveFile, line2))
+		moveFile2 = true;
 
 	while (moveFile1 == true || moveFile2 == true) {
-		if (line1 == "")
-			moveFile1 = false;
-		else {
+		if (moveFile1 == true) {
 			setMove(lineNumber, line1, PLAYER_ONE, currentStatus);
+			cout << line1 << endl;//to comment
+			printBoard();//to comment
 			if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid)
 				break;
-			getline(player1MoveFile, line1);
 		}
-		if (checkWinningConditions(currentStatus)) {
+		if (moveFile1 == true && checkWinningConditions(currentStatus)) {
 			currentStatus.printStatusToFile(outputFile);
 			printBoardToFile(outputFile);
-			break;
+			return;
 		}
-		if (line2 == "")
-			moveFile2 = false;
-		else {
+		if (moveFile2 == true) {
 			setMove(lineNumber, line2, PLAYER_TWO, currentStatus);
+			cout << line2 << endl;//to comment
+			printBoard();//to comment
 			if (currentStatus.getStatus(PLAYER_TWO) != PossibleStatus::Valid)
 				break;
-			getline(player2MoveFile, line2);
 		}
-
-		if (checkWinningConditions(currentStatus)) {
+		if (moveFile2 == true && checkWinningConditions(currentStatus)) {
 			currentStatus.printStatusToFile(outputFile);
 			printBoardToFile(outputFile);
-			break;
+			return;
+		}
+		if (moveFile1 == true) {
+			if (!getline(player1MoveFile, line1))
+				moveFile1 = false;
+		}
+		if (moveFile2 == true) {
+			if (!getline(player2MoveFile, line2))
+				moveFile2 = false;
 		}
 		++lineNumber;
 	}
 
 
 	//game is over in tie after all move files exhausted. print to output file
-
 	currentStatus.printStatusToFile(outputFile);
 	printBoardToFile(outputFile);
 
-	//automatic close open files in destructor
+	//automatic close of opened files in destructor
 
 }
 
-Piece RockPaperScissors::getPieceAt(int row, int col) {
+Piece RockPaperScissors::getPieceAt(int row, int col) const{
 	return board[row][col].getCellPiece();
 }
 
-void RockPaperScissors::setPieceAt(int row, int col, int playerNumber, Piece p) {
+void RockPaperScissors::setPieceAt(int row, int col, int playerNumber, const Piece& p) {
 	board[row][col].setCell(p, playerNumber);
 }
 
-void RockPaperScissors::setMove(int lineNumber, string& line, int playerNumber, status& currentStatus) {
-	Piece p;
+void RockPaperScissors::setMove(int lineNumber, const string& line, int playerNumber, Status& currentStatus) {
+
 	//split string by white spaces
 	istringstream buf(line);
 	istream_iterator<string> beg(buf), end;
@@ -611,12 +563,13 @@ void RockPaperScissors::setMove(int lineNumber, string& line, int playerNumber, 
 	int fromRow, fromCol, toRow, toCol;
 
 	if (isMoveFormatCorrect(tokens)) {
-		//verify player has a mobile Piece at the source location
-		fromRow = tokens[0].at(0);
-		fromCol = tokens[1].at(0);
-		toRow = tokens[2].at(0);
-		toCol = tokens[3].at(0);
 
+		fromRow = stoi(tokens[0]) - 1;
+		fromCol = stoi(tokens[1]) - 1;
+		toRow = stoi(tokens[2]) - 1;
+		toCol = stoi(tokens[3]) - 1;
+
+		//player doesn't have a piece at source 
 		if (getPlayerOwningCell(fromRow, fromCol) != playerNumber) {
 			cout << "Player " << playerNumber << " has no pieces to move at " << fromRow + 1 << "," << fromCol + 1 << " when executing line number " << lineNumber + 1 << ":" << endl \
 				<< line << endl;
@@ -624,10 +577,19 @@ void RockPaperScissors::setMove(int lineNumber, string& line, int playerNumber, 
 			return;
 		}
 
+		//piece at source isn't a moving piece
 		else if (getPieceAt(fromRow, fromCol).getrpc() != RPC::Rock  && \
 				 getPieceAt(fromRow, fromCol).getrpc() != RPC::Paper && \
 				 getPieceAt(fromRow, fromCol).getrpc() != RPC::Scissors) {
 			cout << "Player " << playerNumber << " has no mobile pieces at " << fromRow + 1 << "," << fromCol + 1 << " when executing line " << lineNumber + 1 << ":" << endl \
+				<< line << endl;
+			currentStatus.setStatus(playerNumber, PossibleStatus::Move_File_Error, lineNumber, line);
+			return;
+		}
+
+		//player already has a piece at destination 
+		else if (getPlayerOwningCell(toRow, toCol) == playerNumber) {
+			cout << "Player " << playerNumber << " already has a " << getPieceAt(toRow, toCol) << " piece at " << toRow + 1 << "," << toCol + 1 << " when executing line number " << lineNumber + 1 << ":" << endl \
 				<< line << endl;
 			currentStatus.setStatus(playerNumber, PossibleStatus::Move_File_Error, lineNumber, line);
 			return;
@@ -647,14 +609,46 @@ void RockPaperScissors::setMove(int lineNumber, string& line, int playerNumber, 
 	//move the piece
 
 	//place piece at new cell
-	if (!placePiece(playerNumber, p, board, fromRow, fromCol, toRow, toCol, line, currentStatus))
+	if (!placePiece(playerNumber, Piece(), fromRow, fromCol, toRow, toCol, lineNumber, line, currentStatus))
 		return;
+
+	if (tokens.size() == 8) {
+		Cell& c = board[stoi(tokens[5]) - 1][stoi(tokens[6]) - 1];
+		if (c.getPlayerOwning() == playerNumber && c.getCellPiece().getisJoker() == true) {
+			int toR = stoi(tokens[5]) - 1;
+			int toC = stoi(tokens[6]) - 1;
+			Piece pTo;
+			pTo.setJoker(true);
+			switch (tokens[7].at(0)) {
+				case 'R':
+					pTo.setrpc(RPC::Rock);
+					break;
+				case 'P':
+					pTo.setrpc(RPC::Paper);
+					break;
+				case 'S':
+					pTo.setrpc(RPC::Scissors);
+					break;
+				case 'B':
+					pTo.setrpc(RPC::Bomb);
+					break;
+			}
+			changeJokerRepresentation(board[fromRow][fromCol].getCellPiece(), pTo);
+		}
+		else {
+			cout << "Player " << playerNumber << " has no joker piece at " << toRow + 1 << "," << toCol + 1 << " when executing line number " << lineNumber + 1 << ":" << endl \
+				<< line << endl;
+			currentStatus.setStatus(playerNumber, PossibleStatus::Move_File_Error, lineNumber, line);
+		}
+	}
 }
 
+void RockPaperScissors::changeJokerRepresentation(Piece& fromP, Piece& toP) {
+	fromP = toP;
+}
 
-//sanity check 
-void RockPaperScissors::printBoardToFile(ofstream& outputFile) {
-	char chr;
+void RockPaperScissors::printBoardToFile(ofstream& outputFile) const{
+	char chr = ' ';
 	for (int i = 0; i < NUM_OF_ROWS; ++i) {
 		for (int j = 0; j < NUM_OF_COLS; ++j) {
 			Cell& cel = board[i][j];
@@ -713,5 +707,67 @@ void RockPaperScissors::printBoardToFile(ofstream& outputFile) {
 		}
 		outputFile << endl;
 	}
+}
 
+void RockPaperScissors::printBoard() {
+	char chr = '_';
+	for (int i = 0; i < NUM_OF_ROWS; ++i) {
+		for (int j = 0; j < NUM_OF_COLS; ++j) {
+			Cell& cel = board[i][j];
+			Piece p = cel.getCellPiece();
+			int playerOwn = cel.getPlayerOwning();
+			if (playerOwn == PLAYER_ONE) {
+				if (p.getisJoker())
+					chr = 'J';
+				else {
+					switch (p.getrpc()) {
+						case RPC::Rock:
+							chr = 'R';
+							break;
+						case RPC::Paper:
+							chr = 'P';
+							break;
+						case RPC::Scissors:
+							chr = 'S';
+							break;
+						case RPC::Bomb:
+							chr = 'B';
+							break;
+						case RPC::Flag:
+							chr = 'F';
+							break;
+					}
+				}
+			}
+			else if (playerOwn == PLAYER_TWO) {
+				if (p.getisJoker())
+					chr = 'j';
+				else {
+					switch (p.getrpc()) {
+						case RPC::Rock:
+							chr = 'r';
+							break;
+						case RPC::Paper:
+							chr = 'p';
+							break;
+						case RPC::Scissors:
+							chr = 's';
+							break;
+						case RPC::Bomb:
+							chr = 'b';
+							break;
+						case RPC::Flag:
+							chr = 'f';
+							break;
+					}
+				}
+			}
+			else {
+				chr = '_';
+			}
+			cout << chr;
+		}
+		cout << endl;
+	}
+	cout << endl;
 }

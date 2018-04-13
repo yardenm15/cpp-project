@@ -1,13 +1,13 @@
 Winner: 2
-Bad Positioning input file for player 1 - line 1
+Bad Moves input file for player 1 - line 2
 
-j         
- s        
-  r       
-          
-          
-          
-          
-          
-f         
-          
+  r      B
+p  j      
+   b   P  
+     R  fP
+      R pF
+ P     J  
+  J    s  
+ S        
+     pp   
+         r

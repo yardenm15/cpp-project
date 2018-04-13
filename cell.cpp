@@ -5,12 +5,15 @@
 *  Author: Oleg S.
 */
 
-//#include "stdafx.h"
 #include "cell.h"
 
 void Cell::setCell(Piece newPiece, int playerNumber) {
-		currentPiece = newPiece;
-		playerOwn = playerNumber;
+	piece = newPiece;
+	playerOwn = playerNumber;
+}
+
+Piece Cell::getCellPiece() const {
+	return piece;
 }
 
 std::ostream& operator<<(std::ostream& o, const Piece& p) {
@@ -38,34 +41,24 @@ std::ostream& operator<<(std::ostream& o, const Piece& p) {
 	return o;
 }
 
-Piece Cell::getCellPiece() {
-	return currentPiece;
-}
-
-int Cell::getPlayerOwning() {
+int Cell::getPlayerOwning() const {
 	return playerOwn;
 }
 
-Piece::Piece(const Piece &piece) {
-	isJoker = piece.isJoker;
-	rpc = piece.rpc;
+Piece::Piece(const Piece& p) {
+	rpc = p.getrpc();
+	isJoker = p.getisJoker();
 }
 
-Piece & Piece::operator=(const Piece & other) {
-	isJoker = other.isJoker;
-	rpc = other.rpc;
-	return *this;
-}
-
-void Piece::setrpc(RPC r) {
+void Piece::setrpc(const RPC r) {
 	rpc = r;
 }
 
-RPC Piece::getrpc() const{
+RPC Piece::getrpc() const {
 	return rpc;
 }
 
-void Piece::setJoker(bool bol) {
+void Piece::setJoker(const bool bol) {
 	Piece::isJoker = bol;
 }
 
