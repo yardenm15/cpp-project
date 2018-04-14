@@ -316,13 +316,13 @@ bool RockPaperScissors::checkWinningConditions(Status& currentStatus) const {
 		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::All_Flags_Captured);
 		return true;
 	}
-	else if (doPlayerHasMovablePieces(PLAYER_ONE) == false && doPlayerHasMovablePieces(PLAYER_TWO) == false) {
+	else if (!doPlayerHasMovablePieces(PLAYER_ONE) && !doPlayerHasMovablePieces(PLAYER_TWO)) {
 		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::Out_Of_Moving_Pieces);
 		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::Out_Of_Moving_Pieces);
 		return true;
 	}
 
-	else if (doPlayerHasMovablePieces(PLAYER_ONE) == false) {
+	else if (!doPlayerHasMovablePieces(PLAYER_ONE)) {
 		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::Out_Of_Moving_Pieces);
 		return true;
 	}
@@ -330,7 +330,7 @@ bool RockPaperScissors::checkWinningConditions(Status& currentStatus) const {
 		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::All_Flags_Captured);
 		return true;
 	}
-	else if (doPlayerHasMovablePieces(PLAYER_TWO) == false) {
+	else if (!doPlayerHasMovablePieces(PLAYER_TWO)) {
 		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::Out_Of_Moving_Pieces);
 		return true;
 	}
