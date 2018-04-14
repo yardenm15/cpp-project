@@ -55,19 +55,19 @@ void Status::setIsPositioningPhase(bool b) {
 void Status::printStatusToFile(ofstream& outputFile) const {
 
 	//tie - error in both players positioning files
-	if (playerOne.getPlayerStatus() == PossibleStatus::input_File_Error && playerTwo.getPlayerStatus() == PossibleStatus::input_File_Error) {
+	if ((playerOne.getPlayerStatus() == PossibleStatus::input_File_Error) && (playerTwo.getPlayerStatus() == PossibleStatus::input_File_Error)) {
 		outputFile << "Winner: 0" << endl;
 		outputFile << "Reason: " << "Bad Positioning input file for both players - player 1: line " << playerOne.getlineNumber() + 1 << ", player 2: line " << playerTwo.getlineNumber() + 1 << endl;
 	}
 
 	//tie - both players lost their flags in the positioning phase
-	else if (playerOne.getPlayerStatus() == PossibleStatus::All_Flags_Captured && playerTwo.getPlayerStatus() == PossibleStatus::All_Flags_Captured) {
+	else if ((playerOne.getPlayerStatus() == PossibleStatus::All_Flags_Captured) && (playerTwo.getPlayerStatus() == PossibleStatus::All_Flags_Captured)) {
 		outputFile << "Winner: 0" << endl;
 		outputFile << "A tie - all flags are eaten by both players in the position files" << endl;
 	}
 
 	//tie - both players exhausted their moves with no winner
-	else if (playerOne.getPlayerStatus() == PossibleStatus::Valid && playerTwo.getPlayerStatus() == PossibleStatus::Valid) {
+	else if ((playerOne.getPlayerStatus() == PossibleStatus::Valid) && (playerTwo.getPlayerStatus() == PossibleStatus::Valid)) {
 		outputFile << "Winner: 0" << endl;
 		outputFile << "A tie - both Moves input files done without a winner" << endl;
 	}
