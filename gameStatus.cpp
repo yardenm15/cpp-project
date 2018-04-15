@@ -55,21 +55,21 @@ void Status::setIsPositioningPhase(bool b) {
 void Status::printStatusToFile(ofstream& outputFile) const {
 
 	//tie - error in both players positioning files
-	if ((playerOne.getPlayerStatus() == PossibleStatus::input_File_Error) && (playerTwo.getPlayerStatus() == PossibleStatus::input_File_Error)) {
+	if (playerOne.getPlayerStatus() == PossibleStatus::input_File_Error && playerTwo.getPlayerStatus() == PossibleStatus::input_File_Error) {
 		outputFile << "Winner: 0" << endl;
 		outputFile << "Reason: " << "Bad Positioning input file for both players - player 1: line " << playerOne.getlineNumber() + 1 << ", player 2: line " << playerTwo.getlineNumber() + 1 << endl;
 	}
 
 	//tie - both players lost their flags in the positioning phase
-	else if ((playerOne.getPlayerStatus() == PossibleStatus::All_Flags_Captured) && (playerTwo.getPlayerStatus() == PossibleStatus::All_Flags_Captured)) {
+	else if (playerOne.getPlayerStatus() == PossibleStatus::All_Flags_Captured && playerTwo.getPlayerStatus() == PossibleStatus::All_Flags_Captured) {
 		outputFile << "Winner: 0" << endl;
-		outputFile << "A tie - all flags are eaten by both players in the position files" << endl;
+		outputFile << "Reason: " << "A tie - all flags are eaten by both players in the position files" << endl;
 	}
 
 	//tie - both players exhausted their moves with no winner
-	else if ((playerOne.getPlayerStatus() == PossibleStatus::Valid) && (playerTwo.getPlayerStatus() == PossibleStatus::Valid)) {
+	else if (playerOne.getPlayerStatus() == PossibleStatus::Valid && playerTwo.getPlayerStatus() == PossibleStatus::Valid) {
 		outputFile << "Winner: 0" << endl;
-		outputFile << "A tie - both Moves input files done without a winner" << endl;
+		outputFile << "Reason: " << "A tie - both Moves input files done without a winner" << endl;
 	}
 
 	//player one has lost
@@ -77,16 +77,16 @@ void Status::printStatusToFile(ofstream& outputFile) const {
 		outputFile << "Winner: 2" << endl;
 		switch (Status::playerOne.getPlayerStatus()) {
 		case PossibleStatus::input_File_Error:
-			outputFile << "Bad Positioning input file for player " << PLAYER_ONE << " - line " << playerOne.getlineNumber() << endl;
+			outputFile << "Reason: " << "Bad Positioning input file for player " << PLAYER_ONE << " - line " << playerOne.getlineNumber() << endl;
 			break;
 		case PossibleStatus::Move_File_Error:
-			outputFile << "Bad Moves input file for player " << PLAYER_ONE << " - line " << playerOne.getlineNumber() << endl;
+			outputFile << "Reason: " << "Bad Moves input file for player " << PLAYER_ONE << " - line " << playerOne.getlineNumber() << endl;
 			break;
 		case PossibleStatus::All_Flags_Captured:
-			outputFile << "All flags of the opponent are captured" << endl;
+			outputFile << "Reason: " << "All flags of the opponent are captured" << endl;
 			break;
 		case PossibleStatus::Out_Of_Moving_Pieces:
-			outputFile << "All moving PIECEs of the opponent are eaten" << endl;
+			outputFile << "Reason: " << "All moving PIECEs of the opponent are eaten" << endl;
 			break;
 		default:
 			break;
@@ -98,16 +98,16 @@ void Status::printStatusToFile(ofstream& outputFile) const {
 		outputFile << "Winner: 1" << endl;
 		switch (Status::playerTwo.getPlayerStatus()) {
 		case PossibleStatus::input_File_Error:
-			outputFile << "Bad Positioning input file for player " << PLAYER_TWO << " - line " << playerTwo.getlineNumber() << endl;
+			outputFile << "Reason: " << "Bad Positioning input file for player " << PLAYER_TWO << " - line " << playerTwo.getlineNumber() << endl;
 			break;
 		case PossibleStatus::Move_File_Error:
-			outputFile << "Bad Moves input file for player " << PLAYER_TWO << " - line " << playerTwo.getlineNumber() << endl;
+			outputFile << "Reason: " << "Bad Moves input file for player " << PLAYER_TWO << " - line " << playerTwo.getlineNumber() << endl;
 			break;
 		case PossibleStatus::All_Flags_Captured:
-			outputFile << "All flags of the opponent are captured" << endl;
+			outputFile << "Reason: " << "All flags of the opponent are captured" << endl;
 			break;
 		case PossibleStatus::Out_Of_Moving_Pieces:
-			outputFile << "All moving PIECEs of the opponent are eaten" << endl;
+			outputFile << "Reason: " << "All moving PIECEs of the opponent are eaten" << endl;
 			break;
 		default:
 			break;

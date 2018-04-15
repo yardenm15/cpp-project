@@ -5,6 +5,7 @@
 *  Author: Oleg S.
 */
 
+
 #include "RockPaperScissors.h"
 
 RockPaperScissors::RockPaperScissors() {
@@ -316,13 +317,13 @@ bool RockPaperScissors::checkWinningConditions(Status& currentStatus) const {
 		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::All_Flags_Captured);
 		return true;
 	}
-	else if (!doPlayerHasMovablePieces(PLAYER_ONE) && !doPlayerHasMovablePieces(PLAYER_TWO)) {
+	else if (doPlayerHasMovablePieces(PLAYER_ONE) == false && doPlayerHasMovablePieces(PLAYER_TWO) == false) {
 		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::Out_Of_Moving_Pieces);
 		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::Out_Of_Moving_Pieces);
 		return true;
 	}
 
-	else if (!doPlayerHasMovablePieces(PLAYER_ONE)) {
+	else if (doPlayerHasMovablePieces(PLAYER_ONE) == false) {
 		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::Out_Of_Moving_Pieces);
 		return true;
 	}
@@ -330,7 +331,7 @@ bool RockPaperScissors::checkWinningConditions(Status& currentStatus) const {
 		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::All_Flags_Captured);
 		return true;
 	}
-	else if (!doPlayerHasMovablePieces(PLAYER_TWO)) {
+	else if (doPlayerHasMovablePieces(PLAYER_TWO) == false) {
 		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::Out_Of_Moving_Pieces);
 		return true;
 	}
@@ -613,9 +614,7 @@ void RockPaperScissors::setMove(int lineNumber, const string& line, int playerNu
 		return;
 
 	if (tokens.size() == 8) {
-		int jokerRow = stoi(tokens[5]) - 1;
-		int jokerCol = stoi(tokens[6]) - 1;
-		Cell& c = board[jokerRow][jokerCol];
+		Cell& c = board[stoi(tokens[5]) - 1][stoi(tokens[6]) - 1];
 		if (c.getPlayerOwning() == playerNumber && c.getCellPiece().getisJoker() == true) {
 			Piece pTo;
 			pTo.setJoker(true);
@@ -633,7 +632,7 @@ void RockPaperScissors::setMove(int lineNumber, const string& line, int playerNu
 				pTo.setrpc(RPC::Bomb);
 				break;
 			}
-			board[jokerRow][jokerCol].setCell(pTo, playerNumber);
+			c.setCell(pTo, playerNumber);
 		}
 		else {
 			cout << "Player " << playerNumber << " has no joker piece at " << stoi(tokens[5]) << "," << stoi(tokens[6]) << " when executing line number " << lineNumber + 1 << ":" << endl \
