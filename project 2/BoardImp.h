@@ -1,15 +1,27 @@
-#ifndef __BOARDIMP_H_
-#define __BOARDIMP_H_
+#ifndef _BOARDIMP_H_
+#define _BOARDIMP_H_
 
 #include "Board.h"
+#include "Point.h"
+#include "PiecePosition.h"
+#include "PiecePositionImp.h"
+#include <vector>
+#include <memory> // for unique_ptr
 
 #define NUMBER_OF_ROWS 10
 #define NUMBER_OF_COLUMNS 10
 
+using namespace std;
+
+
 class BoardImp : public Board {
-	vector<unique_ptr<PiecePosition>> board;
+	vector<vector<unique_ptr<PiecePosition>>> board;
 public:
-	virtual int getPlayer(const Point& pos) const { return board[pos.getX()*NUMBER_OF_ROWS + pos.getY()].get()->getPosition; };
+	BoardImp() {};
+	BoardImp(const BoardImp&) = delete;
+	BoardImp& operator =(const BoardImp&) = delete;
+	virtual int getPlayer(const Point& pos) const;
+				
 };
 
 #endif

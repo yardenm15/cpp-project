@@ -1,5 +1,5 @@
-#ifndef __POINTIMP_H_
-#define __POINTIMP_H_
+#ifndef POINTIMP_H_
+#define POINTIMP_H_
 
 #include "Point.h"
 
@@ -10,10 +10,10 @@
 class PointImp : public Point {
 	int x, y;
 public:
-	virtual int getX() const override { return x; };
-	virtual int getY() const override { return y; };
-	void setX(int row) { x = row; };
-	void setY(int column) { y = column; };
+	virtual int getX() const override;
+	virtual int getY() const override;
+	void setX(int row);
+	void setY(int column);
 };
 
 #endif

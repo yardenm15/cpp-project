@@ -1,4 +1,5 @@
-#include "FightInfoImp.h";
+#include "stdafx.h"
+#include "FightInfoImp.h"
 
 char FightInfoImp::getOpponentPiece() const {
 	if (playerAttacking == PLAYER_1)

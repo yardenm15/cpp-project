@@ -1,5 +1,5 @@
-#ifndef __FIGHTINFOIMP_H_
-#define __FIGHTINFOIMP_H_
+#ifndef FIGHTINFOIMP_H_
+#define FIGHTINFOIMP_H_
 
 #include "FightInfo.h"
 #include "PiecePositionImp.h"
@@ -16,7 +16,7 @@ class FightInfoImp : public FightInfo {
 	PiecePositionImp player1Piece;
 	PiecePositionImp player2Piece;
 	PointImp position;
-	int fightTable [NUM_OF_DIFFERENT_SHAPES][NUM_OF_DIFFERENT_SHAPES];
+	int fightTable[NUM_OF_DIFFERENT_SHAPES][NUM_OF_DIFFERENT_SHAPES];
 public:
 	virtual const Point& getPosition() const { return position; };
 	virtual char getOpponentPiece() const;

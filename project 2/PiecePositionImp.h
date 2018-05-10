@@ -1,5 +1,5 @@
-#ifndef __PIECEPOSITIONIMP_H_
-#define __PIECEPOSITIONIMP_H_
+#ifndef PIECEPOSITIONIMP_H_
+#define PIECEPOSITIONIMP_H_
 
 #include "PiecePosition.h"
 #include "PointImp.h"
@@ -10,13 +10,14 @@ class PiecePositionImp : public PiecePosition {
 	char piece;
 	char jokerRep;
 public:
-	virtual const Point& getPosition() const { return position; };
-	virtual char getPiece() const { return piece; }; 
-	virtual char getJokerRep() const { return jokerRep; };
-	int getOwner() const { return owner; };
-	void setPiece(char p) { piece = p; };
-	void setJokerRep(char j) { jokerRep = j; };
-	void setOwner(int o) { owner = o; };
+	virtual const Point& getPosition() const;
+	virtual char getPiece() const;
+	virtual char getJokerRep() const;
+	int getOwner() const;
+	void setPiece(char p);
+	void setJokerRep(char j);
+	void setOwner(int o);
+	void setPosition(int x, int y);
 };
 
 #endif

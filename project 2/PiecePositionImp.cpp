@@ -1,31 +1,41 @@
-#include "PiecePosition.h"
-class PiecePositionImp : public PiecePosition {
+#include "stdafx.h"
+#include "PiecePositionImp.h"
 
-public:
-	virtual const Point& getPosition() const override {
-		//switch (p.getrpc()) {
-		//	case RPC::Rock:
-		//		chr = 'R';
-		//		break;
-		//	case RPC::Paper:
-		//		chr = 'P';
-		//		break;
-		//	case RPC::Scissors:
-		//		chr = 'S';
-		//		break;
-		//	case RPC::Bomb:
-		//		chr = 'B';
-		//		break;
-		//	case RPC::Flag:
-		//		chr = 'F';
-		//		break;
-		//	default:
-		//		break;
-		//}
-	};
-	virtual char getPiece() const override {
-	}; 
-	virtual char getJokerRep() const override {
-	}; 
+const Point& PiecePositionImp::getPosition() const { 
+	return position; 
 };
+
+char PiecePositionImp::getPiece() const { 
+	return piece; 
+};
+
+char PiecePositionImp::getJokerRep() const { 
+	return jokerRep; 
+};
+
+int PiecePositionImp::getOwner() const { 
+	return owner; 
+};
+
+void PiecePositionImp::setPiece(char p) { 
+	piece = p; 
+};
+
+void PiecePositionImp::setJokerRep(char j) { 
+	jokerRep = j; 
+};
+
+void PiecePositionImp::setOwner(int o) { 
+	owner = o; 
+};
+
+void PiecePositionImp::setPosition(int x, int y) {
+	position.setX(x);
+	position.setY(y);
+}
+
+
+
+
+
 

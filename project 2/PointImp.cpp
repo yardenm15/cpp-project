@@ -1,7 +1,12 @@
-#include "Point.h"
-class PointImp : public Point {
-	int x, y;
-public:
-	virtual int getX() const override { return x; };
-	virtual int getY() const override { return y; };
-};
+#include "stdafx.h"
+#include "PointImp.h"
+
+
+
+	int PointImp::getX() const  { return x; }
+
+	int PointImp::getY() const  { return y; }
+
+	void PointImp::setX(int row) { x = row; };
+
+	void PointImp::setY(int column) { y = column; };

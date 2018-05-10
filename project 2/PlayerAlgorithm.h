@@ -1,5 +1,5 @@
-#ifndef __PLAYER_ALGORITHM_H_
-#define __PLAYER_ALGORITHM_H_
+#ifndef PLAYER_ALGORITHM_H_
+#define PLAYER_ALGORITHM_H_
 
 //--------------------------
 // PlayerAlgorithm Interface

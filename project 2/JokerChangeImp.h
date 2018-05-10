@@ -1,12 +1,15 @@
-#ifndef __JOKERCHANGEIMP_H_
-#define __JOKERCHANGEIMP_H_
+#ifndef JOKERCHANGEIMP_H_
+#define JOKERCHANGEIMP_H_
 #include "JokerChange.h"
+#include "PointImp.h"
 
 class JokerChangeImp : public JokerChange {
-	int x, y;
+	PointImp changePoint;
+	char jokerRep;
 public:
-	virtual const Point& getJokerChangePosition() const {};
-	virtual char getJokerNewRep() const {}; // R, P, S or B (but NOT J and NOT F)
+	JokerChangeImp(PointImp changePoint, char jokerRep);
+	virtual const Point& getJokerChangePosition() const;
+	virtual char getJokerNewRep() const; // R, P, S or B (but NOT J and NOT F)
 };
 
 #endif
