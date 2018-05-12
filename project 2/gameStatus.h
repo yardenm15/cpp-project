@@ -27,7 +27,7 @@ class playerStatus {
 public:
 	explicit playerStatus() : status(PossibleStatus::Valid) {}
 	playerStatus(const playerStatus&) = delete;
-	playerStatus& operator=(const playerStatus&) = delete;
+	//playerStatus& operator=(const playerStatus&) = delete;
 	void setPlayerStatus(const PossibleStatus stat, const int lineNumber = -1, const string line = "");
 	PossibleStatus getPlayerStatus() const;
 	int getlineNumber() const;
@@ -41,7 +41,7 @@ class Status {
 public:
 	explicit Status();
 	Status(const Status&) = delete;
-	Status& operator=(const Status&) = delete;
+	//Status& operator=(const Status&) = delete;
 	void printStatusToFile(ofstream& outputFile) const;
 	PossibleStatus getStatus(int playerNumber) const;
 	void setStatus(int playerNumber, const PossibleStatus status, int lineNumber = -1, const string line = "");

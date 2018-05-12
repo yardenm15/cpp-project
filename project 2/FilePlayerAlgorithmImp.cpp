@@ -3,11 +3,14 @@
 #include "auxiliaryFunctions.h"
 
 
-FilePlayerAlgorithmImp::FilePlayerAlgorithmImp(string positionsFile, string MovesFile) {
+FilePlayerAlgorithmImp::FilePlayerAlgorithmImp(string positionsFile, string MovesFile, Status& curStatus) {
 	positionsFile = positionsFile;
 	MovesFile = MovesFile;
+	currentStatus = curStatus;
 
 }
+
+
 
 void FilePlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>>& vectorToFill) {
 	
@@ -16,17 +19,17 @@ void FilePlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 	//open input file
 	ifstream playerPositionFile(positionsFile);
 	if (!playerPositionFile) {
-		status.setPlayerStatus(PossibleStatus::File_Error);
+		currentStatus.setStatus(player, PossibleStatus::File_Error);
 		cout << "failed to open" << player << "'s positions file" << endl;
 	}
 
 	lineNumber = 0;
-	//processing position file for player 1
+	//processing position file 
 	for (string line; getline(playerPositionFile, line); ++lineNumber) {
 		PiecePositionImp Piece;
-		parseToPiecePosition(lineNumber, line, player, status, Piece);
+		parseToPiecePosition(lineNumber, line, player, currentStatus, Piece);
 		vectorToFill.push_back(std::make_unique<PiecePositionImp>(Piece));
-		if (status.getPlayerStatus() != PossibleStatus::Valid)
+		if (currentStatus.getStatus(player) != PossibleStatus::Valid)
 			break;
 	}
 
@@ -34,7 +37,7 @@ void FilePlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 
 }
 
-void FilePlayerAlgorithmImp::parseToPiecePosition(int lineNumber, string line, int player, playerStatus& status, PiecePositionImp& Piece) {
+void FilePlayerAlgorithmImp::parseToPiecePosition(int lineNumber, string line, int player, Status& status, PiecePositionImp& Piece) {
 
 	//split string by white spaces
 	istringstream buf(line);
@@ -51,7 +54,8 @@ void FilePlayerAlgorithmImp::parseToPiecePosition(int lineNumber, string line, i
 			<< line << endl \
 			<< "Correct format is:" << endl \
 			<< "<PIECE_CHAR> <X> <Y> or J <X> <Y> <PIECE_CHAR>" << endl;
-		status.setPlayerStatus(PossibleStatus::input_File_Error, lineNumber + 1, line);
+		currentStatus.setStatus(player, PossibleStatus::input_File_Error, lineNumber + 1, line);
+
 	}
 
 }

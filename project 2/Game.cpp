@@ -3,19 +3,20 @@
 #include "MoveImp.h"
 
 
-Game::Game(string firstAlgoType, string secondAlgoType, string player1InitFile, string player1MoveFile, string player2InitFile, string player2MoveFile) {
+Game::Game(string firstAlgoType, string secondAlgoType, string outputFile, string player1InitFile, string player1MoveFile, string player2InitFile, string player2MoveFile) {
 
 	//freedom to choose the input files names
 	player1InitFile = player1InitFile;
 	player2InitFile = player2InitFile;
 	player1MoveFile = player1MoveFile;
 	player2MoveFile = player2MoveFile;
+	outFile = outputFile;
 
 	gameOver = false;
 
 	if (firstAlgoType.compare("file") && secondAlgoType.compare("file")) {
-		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player1InitFile, player1MoveFile));
-		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player2InitFile, player2MoveFile));
+		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player1InitFile, player1MoveFile, currentStatus));
+		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player2InitFile, player2MoveFile, currentStatus));
 
 		
 	}
@@ -66,11 +67,25 @@ bool Game::isGameOver() {
 }
 
 void Game::startGame() {
+
+	ofstream outputFile;
+	outputFile.open(outFile);
+
 	while (!isGameOver()) {
+
 		//to do :think about smart way to read moves lines from movesfile and return them one by one with getMove() method
 
 		(*participatingAlgs[0]).getInitialPositions(1, positionsVectorPlayer1);
 		(*participatingAlgs[0]).getInitialPositions(2, positionsVectorPlayer2);
+		
+		//verify valid format of lines in Positions files
+		if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid || currentStatus.getStatus(PLAYER_TWO) != PossibleStatus::Valid) {
+			currentStatus.printStatusToFile(outputFile);
+
+			//-------to do: implement printBoardToFile
+			//printBoardToFile(outputFile);
+			return;
+		}
 		
 		// fill the board with the Initial Positions
 
@@ -81,4 +96,8 @@ void Game::startGame() {
 		//todo: keep filling MoveImp data members and methods to continue iwth check if there was a fight
 	}
 
+	
+
 }
+
+

@@ -21,6 +21,7 @@ public:
 	BoardImp(const BoardImp&) = delete;
 	BoardImp& operator =(const BoardImp&) = delete;
 	virtual int getPlayer(const Point& pos) const;
+
 				
 };
 
