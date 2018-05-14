@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "PiecePositionImp.h"
 
+PiecePositionImp::PiecePositionImp() {
+	owner = NO_PLAYER;
+}
 const Point& PiecePositionImp::getPosition() const { 
 	return position; 
 };

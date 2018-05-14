@@ -60,6 +60,12 @@ Game::Game(string firstAlgoType, string secondAlgoType, string outputFile, strin
 	strengthTable[FLAG][SCISSORS] = LOSE;
 	strengthTable[FLAG][BOMB] = TIE;
 	strengthTable[FLAG][FLAG] = TIE;
+
+	//initialize number of pieces each player has
+	for (int i = 0; i < NUM_OF_DIFFERENT_PIECES; ++i) {
+		piecesToPlace_Player1[i] = numberOfPieaces[i];
+		piecesToPlace_Player2[i] = numberOfPieaces[i];
+	}
 }
 
 bool Game::isGameOver() {
@@ -81,13 +87,13 @@ void Game::startGame() {
 		//verify valid format of lines in Positions files
 		if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid || currentStatus.getStatus(PLAYER_TWO) != PossibleStatus::Valid) {
 			currentStatus.printStatusToFile(outputFile);
-
-			//-------to do: implement printBoardToFile
-			//printBoardToFile(outputFile);
+			printBoardToFile(outputFile);
 			return;
 		}
 		
 		// fill the board with the Initial Positions
+		fillBoardWithInitialPositions(PLAYER_ONE, positionsVectorPlayer1);
+		fillBoardWithInitialPositions(PLAYER_TWO, positionsVectorPlayer2);
 
 		//implement getMove befor uncomment:
 		//unique_ptr<Move> player1Move = (*participatingAlgs[0]).getMove();
@@ -99,5 +105,67 @@ void Game::startGame() {
 	
 
 }
+
+void Game::printBoardToFile(ofstream& outputFile) const {
+	char chr = ' ';
+	for (int i = 0; i < NUM_OF_ROWS; ++i) {
+		for (int j = 0; j < NUM_OF_COLS; ++j) {
+			//chr = gameBoard.getBoard().at(i).at(j).getPiece();
+			outputFile << gameBoard.getBoard()[i][j].getPiece();
+		}
+		outputFile << endl;
+	}
+}
+
+void Game::fillBoardWithInitialPositions(int playerNumber, vector<unique_ptr<PiecePosition>>& positionsVector) {
+	
+	size_t size = positionsVector.size();
+	
+	for (size_t lineNum = 0; lineNum < size; ++lineNum) {
+		PointImp *derivedPointer = dynamic_cast<PointImp*>(positionsVector[(int)lineNum].get());
+		placePiece(playerNumber, derivedPointer->getX(), derivedPointer->getY(), positionsVector[lineNum].get()->getPiece(), lineNum);
+	}
+}
+
+//------------to do finish implementation-----------
+void Game::placePiece(int playerNumber, int x, int y, char piece, int lineNumber) {
+
+	//empty valid cell
+	if (gameBoard.getBoard()[x][y].getOwner() == NO_PLAYER) {
+		/*
+		//player has pieces left
+		if (getNumberOfPiecesLeftToPlace(playerNumber, p) > 0) {
+			decreasePieceFromStock(playerNumber, p);//reduce 1 piece left for player
+			increasePieceOnBoard(playerNumber, p);//increase 1 piece on board for player
+			fromCell.setCell(p, playerNumber);
+			return true;
+		}
+		//illegal - out of pieces
+		else {
+			cout << "Player " << playerNumber << " had no more " << p << " pieces at line " << lineNumber + 1 << ":" << endl \
+				<< line << endl;
+			currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, fromRow, line);
+			return false;
+		}
+	}
+	//illegal - same place piece
+	else if (fromCell.getPlayerOwning() == playerNumber) {
+		cout << "Player " << playerNumber << " tried to place a " << p << " in line " << lineNumber + 1 << ":" << endl \
+			<< line << endl \
+			<< "where he already placed there a " << fromCell.getCellPiece() << " before." << endl;
+		currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, lineNumber + 1, line);
+		return false;
+	}
+	//legal place - fight
+	else {
+		decreasePieceFromStock(playerNumber, p);//reduce 1 piece from stock
+		increasePieceOnBoard(playerNumber, p);//increase 1 piece on board
+		fight(fromRow, fromColumn, p, playerNumber);
+		return true;
+	}*/
+
+	}
+}
+
 
 

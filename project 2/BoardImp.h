@@ -15,12 +15,13 @@ using namespace std;
 
 
 class BoardImp : public Board {
-	vector<vector<unique_ptr<PiecePosition>>> board;
+	vector<vector<PiecePositionImp>> board;
 public:
-	BoardImp() {};
+	BoardImp();
 	BoardImp(const BoardImp&) = delete;
 	BoardImp& operator =(const BoardImp&) = delete;
 	virtual int getPlayer(const Point& pos) const;
+	const vector<vector<PiecePositionImp>>&  getBoard() const ;
 
 				
 };

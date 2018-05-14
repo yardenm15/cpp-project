@@ -4,6 +4,8 @@
 #include "PiecePosition.h"
 #include "PointImp.h"
 
+#define NO_PLAYER 0
+
 class PiecePositionImp : public PiecePosition {
 	PointImp position;
 	int owner;
@@ -13,6 +15,7 @@ public:
 	virtual const Point& getPosition() const;
 	virtual char getPiece() const;
 	virtual char getJokerRep() const;
+	PiecePositionImp();
 	int getOwner() const;
 	void setPiece(char p);
 	void setJokerRep(char j);
