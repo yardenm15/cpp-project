@@ -122,49 +122,88 @@ void Game::fillBoardWithInitialPositions(int playerNumber, vector<unique_ptr<Pie
 	size_t size = positionsVector.size();
 	
 	for (size_t lineNum = 0; lineNum < size; ++lineNum) {
-		PointImp *derivedPointer = dynamic_cast<PointImp*>(positionsVector[(int)lineNum].get());
-		placePiece(playerNumber, derivedPointer->getX(), derivedPointer->getY(), positionsVector[lineNum].get()->getPiece(), lineNum);
+		PiecePositionImp *derived = dynamic_cast<PiecePositionImp*>(positionsVector[(int)lineNum].get());
+		placePiece(playerNumber, *derived,  positionsVector[lineNum].get()->getPiece(), lineNum);
 	}
 }
 
-//------------to do finish implementation-----------
-void Game::placePiece(int playerNumber, int x, int y, char piece, int lineNumber) {
+//------------to do finish implementation( update the cell and fight case)-----------
+bool Game::placePiece(int playerNumber, PiecePositionImp Piece, char piece, int lineNumber) {
 
 	//empty valid cell
-	if (gameBoard.getBoard()[x][y].getOwner() == NO_PLAYER) {
-		/*
-		//player has pieces left
-		if (getNumberOfPiecesLeftToPlace(playerNumber, p) > 0) {
-			decreasePieceFromStock(playerNumber, p);//reduce 1 piece left for player
-			increasePieceOnBoard(playerNumber, p);//increase 1 piece on board for player
-			fromCell.setCell(p, playerNumber);
+	if (gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].getOwner() == NO_PLAYER) {
+		if (getNumberOfPiecesLeftToPlace(playerNumber, piece) > 0) {
+			decreasePieceFromStock(playerNumber, piece);//reduce 1 piece left for player
+			increasePieceOnBoard(playerNumber, piece);//increase 1 piece on board for player
+			
+			//to do update the cell
+			//gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()] = Piece;
+			/*gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].setOwner(Piece.getOwner());
+			gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].setPiece(Piece.getPiece());
+			gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].setPiece(Piece.getPiece());
+			*/
+
 			return true;
 		}
-		//illegal - out of pieces
 		else {
-			cout << "Player " << playerNumber << " had no more " << p << " pieces at line " << lineNumber + 1 << ":" << endl \
-				<< line << endl;
-			currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, fromRow, line);
+			cout << "Player " << playerNumber << " had no more " << piece << " pieces at line " << lineNumber + 1 << ":" << endl;
+			currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, Piece.getPosition().getX());
 			return false;
 		}
+
+
 	}
 	//illegal - same place piece
-	else if (fromCell.getPlayerOwning() == playerNumber) {
-		cout << "Player " << playerNumber << " tried to place a " << p << " in line " << lineNumber + 1 << ":" << endl \
-			<< line << endl \
-			<< "where he already placed there a " << fromCell.getCellPiece() << " before." << endl;
-		currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, lineNumber + 1, line);
+	else if (gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].getOwner() == playerNumber) {
+		cout << "Player " << playerNumber << " tried to place a " << piece << " in line " << lineNumber + 1 << ":" << endl \
+			<< "where he already placed there a  piece before." << endl;
+		currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, lineNumber + 1);
 		return false;
 	}
 	//legal place - fight
+	
 	else {
-		decreasePieceFromStock(playerNumber, p);//reduce 1 piece from stock
-		increasePieceOnBoard(playerNumber, p);//increase 1 piece on board
-		fight(fromRow, fromColumn, p, playerNumber);
+	/*	decreasePieceFromStock(playerNumber, piece);//reduce 1 piece from stock
+		increasePieceOnBoard(playerNumber, piece);//increase 1 piece on board
+		fight(fromRow, fromColumn, p, playerNumber);*/
 		return true;
-	}*/
-
 	}
+		
+
+}
+
+int Game::getNumberOfPiecesLeftToPlace(int playerNumber, char Piece) {
+	if (playerNumber == 1) 
+		return piecesToPlace_Player1[pieceToNumRep(Piece)];
+	return piecesToPlace_Player2[pieceToNumRep(Piece)];
+			
+}
+
+int Game::pieceToNumRep(char Piece) {
+	if (Piece == 'R' || Piece == 'r')
+		return ROCK;
+	else if (Piece == 'P' || Piece == 'p')
+		return PAPER;
+	else if (Piece == 'S' || Piece == 's')
+		return SCISSORS;
+	else if (Piece == 'B' || Piece == 'b')
+		return BOMB;
+	else if (Piece == 'F' || Piece == 'f')
+		return FLAG;
+	return JOKER;
+}
+
+void Game::decreasePieceFromStock(int playerNumber, char piece) {
+	if (playerNumber == PLAYER_ONE) 
+		piecesToPlace_Player1[pieceToNumRep(piece)] -= 1;
+	piecesToPlace_Player2[pieceToNumRep(piece)] -= 1;
+
+}
+
+void Game::increasePieceOnBoard(int playerNumber, char piece) {
+	if (playerNumber == PLAYER_ONE) 
+		piecesOnBoard_Player1[pieceToNumRep(piece)] += 1;
+	piecesOnBoard_Player2[pieceToNumRep(piece)] += 1;
 }
 
 

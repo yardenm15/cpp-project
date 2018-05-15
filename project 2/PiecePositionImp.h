@@ -16,11 +16,13 @@ public:
 	virtual char getPiece() const;
 	virtual char getJokerRep() const;
 	PiecePositionImp();
+	// Copy constructor
+	const PiecePositionImp(PiecePositionImp &p);
 	int getOwner() const;
-	void setPiece(char p);
-	void setJokerRep(char j);
-	void setOwner(int o);
-	void setPosition(int x, int y);
+	void setPiece(char p) ;
+	void setJokerRep(char j) ;
+	void setOwner(int o) ;
+	void setPosition(int x, int y) ;
 };
 
 #endif

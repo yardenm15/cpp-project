@@ -60,7 +60,11 @@ public:
 	bool isGameOver();
 	void printBoardToFile(ofstream& outputFile) const;
 	void fillBoardWithInitialPositions(int playerNumber, vector<unique_ptr<PiecePosition>>& positionsVectorPlayer);
-	void placePiece(int playerNumber, int x, int y, char piece, int lineNum);
+	bool placePiece(int playerNumber, PiecePositionImp Piece, char piece, int lineNum);
+	int getNumberOfPiecesLeftToPlace(int playerNumber, char Piece);
+	int pieceToNumRep(char Piece);
+	void decreasePieceFromStock(int playerNumber, char piece);
+	void increasePieceOnBoard(int playerNumber, char piece);
 
 	//bool isGameOver();
 };

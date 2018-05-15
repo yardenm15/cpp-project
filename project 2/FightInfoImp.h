@@ -21,8 +21,8 @@ public:
 	virtual const Point& getPosition() const { return position; };
 	virtual char getOpponentPiece() const;
 	virtual int getWinner() const;
-	PiecePositionImp getPlayer1PiecePosition() const { return player1Piece; };
-	PiecePositionImp getPlayer2PiecePosition() const { return player2Piece; };
+	//PiecePositionImp getPlayer1PiecePosition() const { return player1Piece; };
+	//PiecePositionImp getPlayer2PiecePosition() const { return player2Piece; };
 	int getPlayerAttacking() const { return playerAttacking; };
 };
 

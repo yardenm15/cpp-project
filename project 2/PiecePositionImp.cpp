@@ -20,21 +20,29 @@ int PiecePositionImp::getOwner() const {
 	return owner; 
 };
 
-void PiecePositionImp::setPiece(char p) { 
+void PiecePositionImp::setPiece(char p) {
 	piece = p; 
 };
 
-void PiecePositionImp::setJokerRep(char j) { 
+void PiecePositionImp::setJokerRep(char j)  {
 	jokerRep = j; 
 };
 
-void PiecePositionImp::setOwner(int o) { 
+void PiecePositionImp::setOwner(int o)  {
 	owner = o; 
 };
 
 void PiecePositionImp::setPosition(int x, int y) {
 	position.setX(x);
 	position.setY(y);
+}
+
+PiecePositionImp:: PiecePositionImp(PiecePositionImp &p) {
+	owner = p.getOwner();
+	piece = p.getPiece();
+	jokerRep = p.getJokerRep();
+	position.setX(p.getPosition().getX());
+	position.setY(p.getPosition().getY());
 }
 
 
