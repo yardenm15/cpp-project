@@ -3,10 +3,12 @@
 
 #include "Move.h"
 #include "PointImp.h"
+#include "JokerChangeImp.h"
 
 class MoveImp : public Move {
 	PointImp srcPoint;
 	PointImp destPoint;
+
 public:
 	MoveImp(PointImp srcPoint, PointImp destPoint);
 	virtual const Point& getFrom() const;

@@ -2,7 +2,6 @@
 #include "Game.h"
 #include "MoveImp.h"
 
-
 Game::Game(string firstAlgoType, string secondAlgoType, string outputFile, string player1InitFile, string player1MoveFile, string player2InitFile, string player2MoveFile) {
 
 	//freedom to choose the input files names
@@ -15,8 +14,8 @@ Game::Game(string firstAlgoType, string secondAlgoType, string outputFile, strin
 	gameOver = false;
 
 	if (firstAlgoType.compare("file") && secondAlgoType.compare("file")) {
-		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player1InitFile, player1MoveFile, currentStatus));
-		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player2InitFile, player2MoveFile, currentStatus));
+		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player1InitFile, player1MoveFile, currentStatus, PLAYER_ONE));
+		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player2InitFile, player2MoveFile, currentStatus, PLAYER_TWO));
 
 		
 	}
@@ -126,18 +125,32 @@ void Game::startGame() {
 
 	// positioning phase is over, moving phase starts
 	currentStatus.setIsPositioningPhase(false);
+	
+	
+	
+	FilePlayerAlgorithmImp * d1 = dynamic_cast<FilePlayerAlgorithmImp*>(participatingAlgs[0].get());
+	FilePlayerAlgorithmImp * d2 = dynamic_cast<FilePlayerAlgorithmImp*>(participatingAlgs[1].get());
+
+	int numOfMOvesPlayer1 = d1->getMovesVectorSize();
+	int numOfMOvesPlayer2 = d2->getMovesVectorSize();
+
 
 	while (!isGameOver()) {
 
-		//to do :think about smart way to read moves lines from movesfile and return them one by one with getMove() method
 
-
-
-		//implement getMove befor uncomment:
+		
+		//implement getMove() and getJokerChange() befor uncomment:
 		//unique_ptr<Move> player1Move = (*participatingAlgs[0]).getMove();
+		//unique_ptr<Move> player1JokerChange = (*participatingAlgs[0]).getJokerChange();
 		//unique_ptr<Move> player2Move = (*participatingAlgs[1]).getMove();
+		//unique_ptr<Move> player2JokerChange = (*participatingAlgs[2]).getJokerChange();
 
-		//todo: keep filling MoveImp data members and methods to continue iwth check if there was a fight
+
+
+		//to do at this point:
+		//1.validate the ligality of the moves
+		//2. move the pieces above on the board and act correspondingly(fight for example) 
+
 	}
 
 	
