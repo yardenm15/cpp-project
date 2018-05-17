@@ -16,3 +16,11 @@ BoardImp::BoardImp() {
 const vector<vector<PiecePositionImp>>& BoardImp::getBoard() const{
 	return board;
 }
+
+void BoardImp::setCell(int x, int y, int owner, char piece, char jokerRep) {
+	board[x-1][y-1].setPosition(x, y);
+	board[x-1][y-1].setOwner(owner);
+	board[x-1][y-1].setPiece(piece);
+	board[x-1][y-1].setJokerRep(jokerRep);
+
+}

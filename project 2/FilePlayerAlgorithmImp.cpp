@@ -7,8 +7,14 @@ FilePlayerAlgorithmImp::FilePlayerAlgorithmImp(string positionsFile, string Move
 	positionsFile = positionsFile;
 	MovesFile = MovesFile;
 	currentStatus = curStatus;
+	parseMovesFile(MovesFile);
 
 }
+
+void FilePlayerAlgorithmImp::parseMovesFile(string MovesFile) {
+
+}
+
 
 
 

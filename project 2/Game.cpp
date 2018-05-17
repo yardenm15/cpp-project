@@ -77,23 +77,61 @@ void Game::startGame() {
 	ofstream outputFile;
 	outputFile.open(outFile);
 
+	(*participatingAlgs[0]).getInitialPositions(1, positionsVectorPlayer1);
+	(*participatingAlgs[0]).getInitialPositions(2, positionsVectorPlayer2);
+
+	//verify valid format of lines in Positions files
+	if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid || currentStatus.getStatus(PLAYER_TWO) != PossibleStatus::Valid) {
+		currentStatus.printStatusToFile(outputFile);
+		printBoardToFile(outputFile);
+		return;
+	}
+
+	// fill the board with the Initial Positions
+	fillBoardWithInitialPositions(positionsVectorPlayer1, positionsVectorPlayer2);
+
+	//verify no positioning 2 pieces by the same player at the same cell, no using more pieces than a plyer have,
+	if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid || currentStatus.getStatus(PLAYER_TWO) != PossibleStatus::Valid) {
+		currentStatus.printStatusToFile(outputFile);
+		printBoardToFile(outputFile);
+		return;
+	}
+
+	int flagsLeft = getNumberOfPiecesLeftToPlace(PLAYER_ONE, 'F');
+
+	if (flagsLeft > 0) {
+		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::input_File_Error);
+		cout << "Player " << PLAYER_ONE << " has still " << flagsLeft << " flags to use. Placing all flags is mendatory." << endl;
+	}
+
+	flagsLeft = getNumberOfPiecesLeftToPlace(PLAYER_TWO, 'f');
+
+	if (flagsLeft > 0) {
+		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::input_File_Error);
+		cout << "Player " << PLAYER_TWO << " has still " << flagsLeft << " flags to use. Placing all flags is mendatory." << endl;
+	}
+
+	//verify all flags for both players are on the board
+	if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid && currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid) {
+		currentStatus.printStatusToFile(outputFile);
+		printBoardToFile(outputFile);
+		return;
+	}
+
+	if (checkWinningConditions(currentStatus)) {
+		currentStatus.printStatusToFile(outputFile);
+		printBoardToFile(outputFile);
+		return;
+	}
+
+	// positioning phase is over, moving phase starts
+	currentStatus.setIsPositioningPhase(false);
+
 	while (!isGameOver()) {
 
 		//to do :think about smart way to read moves lines from movesfile and return them one by one with getMove() method
 
-		(*participatingAlgs[0]).getInitialPositions(1, positionsVectorPlayer1);
-		(*participatingAlgs[0]).getInitialPositions(2, positionsVectorPlayer2);
-		
-		//verify valid format of lines in Positions files
-		if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid || currentStatus.getStatus(PLAYER_TWO) != PossibleStatus::Valid) {
-			currentStatus.printStatusToFile(outputFile);
-			printBoardToFile(outputFile);
-			return;
-		}
-		
-		// fill the board with the Initial Positions
-		fillBoardWithInitialPositions(PLAYER_ONE, positionsVectorPlayer1);
-		fillBoardWithInitialPositions(PLAYER_TWO, positionsVectorPlayer2);
+
 
 		//implement getMove befor uncomment:
 		//unique_ptr<Move> player1Move = (*participatingAlgs[0]).getMove();
@@ -117,58 +155,194 @@ void Game::printBoardToFile(ofstream& outputFile) const {
 	}
 }
 
-void Game::fillBoardWithInitialPositions(int playerNumber, vector<unique_ptr<PiecePosition>>& positionsVector) {
+int Game::flagsLeft(int playerNumber) const {
+	if (playerNumber == PLAYER_ONE)
+		return piecesOnBoard_Player1[FLAG];
+	return piecesOnBoard_Player2[FLAG];
+}
+
+bool Game::doPlayerHasMovablePieces(int playerNumber) const {
+	if (playerNumber == PLAYER_ONE) {
+		if (piecesOnBoard_Player1[ROCK] != 0 || piecesOnBoard_Player1[PAPER] != 0 || piecesOnBoard_Player1[SCISSORS] != 0 || aremovingJokers(playerNumber))
+			return true;
+	}
+	else if (piecesOnBoard_Player2[ROCK] != 0 || piecesOnBoard_Player2[PAPER] != 0 || piecesOnBoard_Player2[SCISSORS] != 0 || aremovingJokers(playerNumber))
+		return true;
+	return false;
+}
+
+bool Game::aremovingJokers(int playerNumber) const {
+	if (playerNumber == PLAYER_ONE) {
+		for (int i = 0; i < NUM_OF_JOKERS; ++i) {
+			if (jokersOnBoard_Player1[i].getJokerRep() == 'R' || jokersOnBoard_Player1[i].getJokerRep() == 'P' || jokersOnBoard_Player1[i].getJokerRep() == 'S')
+				return true;
+		}
+		return false;
+	}
+	for (int i = 0; i < NUM_OF_JOKERS; ++i) {
+		if (jokersOnBoard_Player2[i].getJokerRep() == 'r' || jokersOnBoard_Player2[i].getJokerRep() == 'p' || jokersOnBoard_Player2[i].getJokerRep() == 's')
+			return true;
+	}
+	return false;
+}
+
+bool Game::checkWinningConditions(Status& currentStatus) const {
+	if (flagsLeft(PLAYER_ONE) == 0 && flagsLeft(PLAYER_TWO) == 0) {
+		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::All_Flags_Captured);
+		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::All_Flags_Captured);
+		return true;
+	}
+	else if (doPlayerHasMovablePieces(PLAYER_ONE) == false && doPlayerHasMovablePieces(PLAYER_TWO) == false) {
+		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::Out_Of_Moving_Pieces);
+		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::Out_Of_Moving_Pieces);
+		return true;
+	}
+
+	else if (doPlayerHasMovablePieces(PLAYER_ONE) == false) {
+		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::Out_Of_Moving_Pieces);
+		return true;
+	}
+	else if (flagsLeft(PLAYER_ONE) == 0) {
+		currentStatus.setStatus(PLAYER_ONE, PossibleStatus::All_Flags_Captured);
+		return true;
+	}
+	else if (doPlayerHasMovablePieces(PLAYER_TWO) == false) {
+		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::Out_Of_Moving_Pieces);
+		return true;
+	}
+	else if (flagsLeft(PLAYER_TWO) == 0) {
+		currentStatus.setStatus(PLAYER_TWO, PossibleStatus::All_Flags_Captured);
+		return true;
+	}
+	return false;
+}
+
+void Game::fillBoardWithInitialPositions(vector<unique_ptr<PiecePosition>>& positionsVectorPlayer1, vector<unique_ptr<PiecePosition>>& positionsVectorPlayer2){
 	
-	size_t size = positionsVector.size();
+	;
+	size_t firstVectorSize = positionsVectorPlayer1.size();
+	size_t secondtVectorSize = positionsVectorPlayer2.size();
+	int numOfSamallestVector = 1 ? 2 : firstVectorSize < secondtVectorSize;
+	size_t samallestVectorSize = firstVectorSize ? secondtVectorSize : firstVectorSize < secondtVectorSize;
+	size_t longestVectorSize = firstVectorSize ? secondtVectorSize : firstVectorSize > secondtVectorSize;
+	size_t lineNum = 0;
+	PiecePositionImp *pieceOfPlayer1 = dynamic_cast<PiecePositionImp*>(positionsVectorPlayer1[(int)lineNum].get());
+	PiecePositionImp *pieceOfPlayer2 = dynamic_cast<PiecePositionImp*>(positionsVectorPlayer2[(int)lineNum].get());
 	
-	for (size_t lineNum = 0; lineNum < size; ++lineNum) {
-		PiecePositionImp *derived = dynamic_cast<PiecePositionImp*>(positionsVector[(int)lineNum].get());
-		placePiece(playerNumber, *derived,  positionsVector[lineNum].get()->getPiece(), lineNum);
+	//placing simultaneously
+	for (; lineNum < samallestVectorSize; ++lineNum) {
+		
+		placePiece(PLAYER_ONE, *pieceOfPlayer1, positionsVectorPlayer1[lineNum].get()->getPiece(), lineNum);
+		placePiece(PLAYER_TWO, *pieceOfPlayer2, positionsVectorPlayer2[lineNum].get()->getPiece(), lineNum);
+	}
+	//keep placing the leftovers of the longest vector
+	if (firstVectorSize != secondtVectorSize) {
+		for (size_t line = lineNum; line < longestVectorSize; ++line) {
+			if(numOfSamallestVector ==1)
+				placePiece(PLAYER_TWO, *pieceOfPlayer2, positionsVectorPlayer2[line].get()->getPiece(), line);
+			else
+				placePiece(PLAYER_ONE, *pieceOfPlayer1, positionsVectorPlayer1[line].get()->getPiece(), line);
+		}
+
 	}
 }
 
 //------------to do finish implementation( update the cell and fight case)-----------
-bool Game::placePiece(int playerNumber, PiecePositionImp Piece, char piece, int lineNumber) {
+bool Game::placePiece(int playerNumber, PiecePositionImp piecePosition, char piece, int lineNumber) {
 
 	//empty valid cell
-	if (gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].getOwner() == NO_PLAYER) {
+	if (gameBoard.getBoard()[piecePosition.getPosition().getX()-1][piecePosition.getPosition().getY()-1].getOwner() == NO_PLAYER) {
 		if (getNumberOfPiecesLeftToPlace(playerNumber, piece) > 0) {
 			decreasePieceFromStock(playerNumber, piece);//reduce 1 piece left for player
-			increasePieceOnBoard(playerNumber, piece);//increase 1 piece on board for player
+			increasePieceOnBoard(playerNumber, piece, piecePosition);//increase 1 piece on board for player
 			
-			//to do update the cell
-			//gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()] = Piece;
-			/*gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].setOwner(Piece.getOwner());
-			gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].setPiece(Piece.getPiece());
-			gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].setPiece(Piece.getPiece());
-			*/
-
+			//update the cell
+			gameBoard.setCell(piecePosition.getPosition().getX(), piecePosition.getPosition().getY(), piecePosition.getOwner(), piecePosition.getPiece(), piecePosition.getJokerRep());
 			return true;
 		}
 		else {
 			cout << "Player " << playerNumber << " had no more " << piece << " pieces at line " << lineNumber + 1 << ":" << endl;
-			currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, Piece.getPosition().getX());
+			currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, piecePosition.getPosition().getX());
 			return false;
 		}
 
 
 	}
 	//illegal - same place piece
-	else if (gameBoard.getBoard()[Piece.getPosition().getX()][Piece.getPosition().getY()].getOwner() == playerNumber) {
+	else if (gameBoard.getBoard()[piecePosition.getPosition().getX()-1][piecePosition.getPosition().getY()-1].getOwner() == playerNumber) {
 		cout << "Player " << playerNumber << " tried to place a " << piece << " in line " << lineNumber + 1 << ":" << endl \
 			<< "where he already placed there a  piece before." << endl;
 		currentStatus.setStatus(playerNumber, PossibleStatus::input_File_Error, lineNumber + 1);
 		return false;
 	}
 	//legal place - fight
-	
 	else {
-	/*	decreasePieceFromStock(playerNumber, piece);//reduce 1 piece from stock
-		increasePieceOnBoard(playerNumber, piece);//increase 1 piece on board
-		fight(fromRow, fromColumn, p, playerNumber);*/
+		decreasePieceFromStock(playerNumber, piece);//reduce 1 piece from stock
+		increasePieceOnBoard(playerNumber, piece, piecePosition);//increase 1 piece on board
+		fight(piecePosition, playerNumber);
 		return true;
 	}
 		
+
+}
+
+void Game::fight(PiecePositionImp piecePosition, int attackingPlayerNumber) {
+	
+	int defendingPlayerNumber = 1 ? 2 : attackingPlayerNumber == 2;
+	int x = piecePosition.getPosition().getX();
+	int y = piecePosition.getPosition().getY();
+
+	char attackingPiece = piecePosition.getPiece();
+	char attackingPieceJokerRep = piecePosition.getJokerRep();
+	//in case joker, actuallAttackingPieceRep holds the "real" representation 
+	char actuallAttackingPieceRep = attackingPiece ? attackingPieceJokerRep : attackingPieceJokerRep == '#';
+	char defendingPiece = gameBoard.getBoard()[x - 1][y - 1].getPiece();
+	char defendingPieceJokerRep = gameBoard.getBoard()[x - 1][y - 1].getJokerRep();
+	char actuallDefendingPieceRep = defendingPiece ? defendingPieceJokerRep : defendingPieceJokerRep == '#';
+	int battleResult = getFightResult(pieceToNumRep(actuallAttackingPieceRep), pieceToNumRep(actuallDefendingPieceRep));
+
+	//case player initiates fight wins
+	if (battleResult == WIN) {
+		decreasePieceFromBoard(defendingPlayerNumber, actuallDefendingPieceRep, gameBoard.getBoard()[x - 1][y - 1]);
+		//uptade cell with the Attacking player's details
+		gameBoard.setCell(x, y, piecePosition.getOwner(), piecePosition.getPiece(), piecePosition.getJokerRep());
+
+	}
+
+	//case player initiates fight loses
+	else if (battleResult == LOSE) {
+		//decrease the number of pieces Attacking player has on board
+		decreasePieceFromBoard(attackingPlayerNumber, actuallAttackingPieceRep, piecePosition);
+	}
+
+	//case of tie
+	else if (battleResult == TIE) {
+		//remove pieces for both players and initialize cell to be empty
+		gameBoard.setCell(x, y, NO_PLAYER, ' ', ' ');
+		decreasePieceFromBoard(attackingPlayerNumber, attackingPiece, piecePosition);
+		decreasePieceFromBoard(defendingPlayerNumber, defendingPiece, gameBoard.getBoard()[x - 1][y - 1]);
+	}
+}
+
+void Game::decreasePieceFromBoard(int playerNumber, char piece, PiecePositionImp piecePosition) {
+	if (playerNumber == PLAYER_ONE) {
+		if (piece == 'J') {
+			for (int i = 0; i < NUM_OF_JOKERS; ++i)
+				if (jokersOnBoard_Player1[i].getPosition().getX() == piecePosition.getPosition().getX() && jokersOnBoard_Player1[i].getPosition().getY() == piecePosition.getPosition().getY()) {
+					jokersOnBoard_Player1[i].setJokerRep('#');// same as deleted
+				}
+		}
+		piecesOnBoard_Player1[pieceToNumRep(piece)] -= 1;
+	}
+	else {
+		if (piece == 'j') {
+			for (int i = 0; i < NUM_OF_JOKERS; ++i)
+				if (jokersOnBoard_Player2[i].getPosition().getX() == piecePosition.getPosition().getX() && jokersOnBoard_Player2[i].getPosition().getY() == piecePosition.getPosition().getY()) {
+					jokersOnBoard_Player2[i].setJokerRep('#');
+				}
+		}
+		piecesOnBoard_Player2[pieceToNumRep(piece)] -= 1;
+	}
 
 }
 
@@ -177,6 +351,10 @@ int Game::getNumberOfPiecesLeftToPlace(int playerNumber, char Piece) {
 		return piecesToPlace_Player1[pieceToNumRep(Piece)];
 	return piecesToPlace_Player2[pieceToNumRep(Piece)];
 			
+}
+
+int Game::getFightResult(int x, int y) const {
+	return strengthTable[x][y];
 }
 
 int Game::pieceToNumRep(char Piece) {
@@ -196,14 +374,25 @@ int Game::pieceToNumRep(char Piece) {
 void Game::decreasePieceFromStock(int playerNumber, char piece) {
 	if (playerNumber == PLAYER_ONE) 
 		piecesToPlace_Player1[pieceToNumRep(piece)] -= 1;
-	piecesToPlace_Player2[pieceToNumRep(piece)] -= 1;
+	else
+		piecesToPlace_Player2[pieceToNumRep(piece)] -= 1;
 
 }
 
-void Game::increasePieceOnBoard(int playerNumber, char piece) {
-	if (playerNumber == PLAYER_ONE) 
+void Game::increasePieceOnBoard(int playerNumber, char piece, PiecePositionImp piecePosition) {
+
+	if (playerNumber == PLAYER_ONE) {
+		if (piece == 'J') {
+			jokersOnBoard_Player1.push_back(piecePosition);
+		}
 		piecesOnBoard_Player1[pieceToNumRep(piece)] += 1;
-	piecesOnBoard_Player2[pieceToNumRep(piece)] += 1;
+	}
+	else {
+		if (piece == 'j') {
+			jokersOnBoard_Player2.push_back(piecePosition);
+		}
+		piecesOnBoard_Player2[pieceToNumRep(piece)] += 1;
+	}
 }
 
 

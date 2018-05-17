@@ -9,6 +9,8 @@
 #include "PiecePosition.h"
 #include "PiecePositionImp.h"
 #include "gameStatus.h"
+#include "Move.h"
+#include "MoveImp.h"
 #include <vector>
 #include <memory> // for unique_ptr
 #include <iostream>
@@ -22,6 +24,8 @@ class FilePlayerAlgorithmImp : public PlayerAlgorithm {
 	string positionsFile;
 	string MovesFile;
 	Status currentStatus;
+	vector<unique_ptr<Move>> moves;
+
 	
 public:
 	//FilePlayerAlgorithmImp();
@@ -36,6 +40,7 @@ public:
 	unique_ptr<JokerChange> getJokerChange(); // nullptr if no change is requested
 	void parseToPiecePosition(int lineNumber, string line, int player, Status& status, PiecePositionImp& Piece);
 	PiecePositionImp getPieceFromVector(const vector<string>& tokens) const;
+	void parseMovesFile(string MovesFile);
 
 };
 #endif

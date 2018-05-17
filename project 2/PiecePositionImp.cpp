@@ -36,14 +36,14 @@ void PiecePositionImp::setPosition(int x, int y) {
 	position.setX(x);
 	position.setY(y);
 }
-
+/*
 PiecePositionImp:: PiecePositionImp(PiecePositionImp &p) {
 	owner = p.getOwner();
 	piece = p.getPiece();
 	jokerRep = p.getJokerRep();
 	position.setX(p.getPosition().getX());
 	position.setY(p.getPosition().getY());
-}
+}*/
 
 
 

@@ -17,7 +17,7 @@ public:
 	virtual char getJokerRep() const;
 	PiecePositionImp();
 	// Copy constructor
-	const PiecePositionImp(PiecePositionImp &p);
+	//const PiecePositionImp(PiecePositionImp &p);
 	int getOwner() const;
 	void setPiece(char p) ;
 	void setJokerRep(char j) ;

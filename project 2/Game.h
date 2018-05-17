@@ -48,6 +48,8 @@ class Game {
 	int piecesToPlace_Player2[NUM_OF_DIFFERENT_PIECES];
 	int piecesOnBoard_Player1[NUM_OF_DIFFERENT_PIECES];
 	int piecesOnBoard_Player2[NUM_OF_DIFFERENT_PIECES];
+	vector <PiecePositionImp> jokersOnBoard_Player1;
+	vector <PiecePositionImp> jokersOnBoard_Player2;
 	vector<unique_ptr<PlayerAlgorithm>> participatingAlgs;
 	vector<unique_ptr<PiecePosition>> positionsVectorPlayer1;
 	vector<unique_ptr<PiecePosition>> positionsVectorPlayer2;
@@ -59,13 +61,19 @@ public:
 	void startGame();
 	bool isGameOver();
 	void printBoardToFile(ofstream& outputFile) const;
-	void fillBoardWithInitialPositions(int playerNumber, vector<unique_ptr<PiecePosition>>& positionsVectorPlayer);
+	void fillBoardWithInitialPositions(vector<unique_ptr<PiecePosition>>& positionsVectorPlayer1, vector<unique_ptr<PiecePosition>>& positionsVectorPlayer2);
 	bool placePiece(int playerNumber, PiecePositionImp Piece, char piece, int lineNum);
 	int getNumberOfPiecesLeftToPlace(int playerNumber, char Piece);
 	int pieceToNumRep(char Piece);
 	void decreasePieceFromStock(int playerNumber, char piece);
-	void increasePieceOnBoard(int playerNumber, char piece);
-
+	void increasePieceOnBoard(int playerNumber, char piece, PiecePositionImp piecePosition);
+	void fight(PiecePositionImp piecePosition, int attackingPlayerNumber);
+	int getFightResult(int x, int y) const;
+	void decreasePieceFromBoard(int playerNumber, char piece, PiecePositionImp piecePosition);
+	bool checkWinningConditions(Status& currentStatus) const;
+	int flagsLeft(int playerNumber) const;
+	bool doPlayerHasMovablePieces(int playerNumber) const;
+	bool aremovingJokers(int playerNumber) const;
 	//bool isGameOver();
 };
 #endif

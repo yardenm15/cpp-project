@@ -22,6 +22,7 @@ public:
 	BoardImp& operator =(const BoardImp&) = delete;
 	virtual int getPlayer(const Point& pos) const;
 	const vector<vector<PiecePositionImp>>&  getBoard() const ;
+	void setCell(int x, int y, int owner, char piece, char jokerRep);
 
 				
 };
