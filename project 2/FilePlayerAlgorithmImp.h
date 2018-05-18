@@ -26,7 +26,7 @@ using namespace std;
 class FilePlayerAlgorithmImp : public PlayerAlgorithm {
 	string positionsFile;
 	string MovesFile;
-	Status currentStatus;
+	Status *currentStatus;
 	int playerNumber;
 	vector<unique_ptr<Move>> movesVector; 
 	vector<unique_ptr<JokerChange>> jokerChangeVector;
@@ -36,7 +36,7 @@ public:
 	//FilePlayerAlgorithmImp();
 	//FilePlayerAlgorithmImp(const FilePlayerAlgorithmImp&) = delete;
 	//FilePlayerAlgorithmImp& operator =(const FilePlayerAlgorithmImp&) = delete;
-	explicit FilePlayerAlgorithmImp(string positionsFile, string MovesFile, Status& currentStatus, int PlayerNumber);
+	explicit FilePlayerAlgorithmImp(string positionsFile, string MovesFile, Status *currentStatus, int PlayerNumber);
 	void getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>>& vectorToFill);
 	void notifyOnInitialBoard(const Board& b, const std::vector<unique_ptr<FightInfo>>& fights);
 	void notifyOnOpponentMove(const Move& move);

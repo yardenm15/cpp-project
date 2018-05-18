@@ -3,7 +3,7 @@
 #include "auxiliaryFunctions.h"
 
 
-FilePlayerAlgorithmImp::FilePlayerAlgorithmImp(string positionsFile, string MovesFile, Status& curStatus, int PlayerNumber) {
+FilePlayerAlgorithmImp::FilePlayerAlgorithmImp(string positionsFile, string MovesFile, Status *curStatus, int PlayerNumber) {
 	positionsFile = positionsFile;
 	MovesFile = MovesFile;
 	currentStatus = curStatus;
@@ -22,11 +22,11 @@ void FilePlayerAlgorithmImp::parseMovesFile(string MovesFile) {
 
 	ifstream playerMoveFile(MovesFile);
 	if (!playerMoveFile) {
-		currentStatus.setStatus(playerNumber, PossibleStatus::File_Error);
+		(*currentStatus).setStatus(playerNumber, PossibleStatus::File_Error);
 	}
 
 	//verify files exists and open to read
-	if (currentStatus.getStatus(PLAYER_ONE) != PossibleStatus::Valid || currentStatus.getStatus(PLAYER_TWO) != PossibleStatus::Valid) {
+	if ((*currentStatus).getStatus(PLAYER_ONE) != PossibleStatus::Valid || (*currentStatus).getStatus(PLAYER_TWO) != PossibleStatus::Valid) {
 		cout << "usage: Ex1" << endl << "infiles: player1.rps_board, player2.rps_board, player1.rps_moves, player2.rps_moves" << endl;
 		return;
 	}
@@ -73,7 +73,7 @@ void FilePlayerAlgorithmImp::parseMovesFile(string MovesFile) {
 				<< line << endl \
 				<< "Correct format is:" << endl \
 				<< "<FROM_X> <FROM_Y> <TO_X> <TO_Y> [J: <Joker_X> <Joker_Y> <NEW_REP>]" << endl;
-			currentStatus.setStatus(playerNumber, PossibleStatus::Move_File_Error, lineNumber, line);
+			(*currentStatus).setStatus(playerNumber, PossibleStatus::Move_File_Error, lineNumber, line);
 			return;
 		}
 	
@@ -100,7 +100,7 @@ void FilePlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 	//open input file
 	ifstream playerPositionFile(positionsFile);
 	if (!playerPositionFile) {
-		currentStatus.setStatus(player, PossibleStatus::File_Error);
+		(*currentStatus).setStatus(player, PossibleStatus::File_Error);
 		cout << "failed to open" << player << "'s positions file" << endl;
 	}
 
@@ -108,9 +108,9 @@ void FilePlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 	//processing position file 
 	for (string line; getline(playerPositionFile, line); ++lineNumber) {
 		PiecePositionImp Piece;
-		parseToPiecePosition(lineNumber, line, player, currentStatus, Piece);
+		parseToPiecePosition(lineNumber, line, player, (*currentStatus), Piece);
 		vectorToFill.push_back(std::make_unique<PiecePositionImp>(Piece));
-		if (currentStatus.getStatus(player) != PossibleStatus::Valid)
+		if ((*currentStatus).getStatus(player) != PossibleStatus::Valid)
 			break;
 	}
 
@@ -140,7 +140,7 @@ void FilePlayerAlgorithmImp::parseToPiecePosition(int lineNumber, string line, i
 			<< line << endl \
 			<< "Correct format is:" << endl \
 			<< "<PIECE_CHAR> <X> <Y> or J <X> <Y> <PIECE_CHAR>" << endl;
-		currentStatus.setStatus(player, PossibleStatus::input_File_Error, lineNumber + 1, line);
+		(*currentStatus).setStatus(player, PossibleStatus::input_File_Error, lineNumber + 1, line);
 
 	}
 

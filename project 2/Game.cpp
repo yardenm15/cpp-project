@@ -14,8 +14,8 @@ Game::Game(string firstAlgoType, string secondAlgoType, string outputFile, strin
 	gameOver = false;
 
 	if (firstAlgoType.compare("file") && secondAlgoType.compare("file")) {
-		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player1InitFile, player1MoveFile, currentStatus, PLAYER_ONE));
-		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player2InitFile, player2MoveFile, currentStatus, PLAYER_TWO));
+		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player1InitFile, player1MoveFile, &currentStatus, PLAYER_ONE));
+		participatingAlgs.push_back(std::make_unique<FilePlayerAlgorithmImp>(player2InitFile, player2MoveFile, &currentStatus, PLAYER_TWO));
 
 		
 	}
@@ -150,7 +150,7 @@ void Game::startGame() {
 		//to do at this point:
 		//1.validate the ligality of the moves
 		//2. move the pieces above on the board and act correspondingly(fight for example) 
-
+		//3.add calls to notify methods(which does nothing in file vs file case)
 	}
 
 	
