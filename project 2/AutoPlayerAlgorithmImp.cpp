@@ -465,12 +465,16 @@ void AutoPlayerAlgorithmImp::notifyOnOpponentMove(const Move& move){
 	point.setX(fromX);
 	point.setY(fromY);
 
+	char rep = myGameBoard.getBoard()[fromX - 1][fromY - 1].getJokerRep();
+
 	removePointFromOpponentOccupiedPoints(point);
 	myGameBoard.setCell(fromX, fromY, NO_PLAYER, '#', '#');
 
-	//case no fight move him
+	//case no fight move him in my board
 	if (myGameBoard.getBoard()[toX-1][toY-1].getOwner() != myPlayerNumber) {
-		myGameBoard.setCell(toX, toY, opponentNumber, '#', '#');
+		myGameBoard.setCell(toX, toY, opponentNumber, '#', rep);
+		point.setX(toX);
+		point.setY(toY);
 		opponentOccupiedPoints.push_back(point);
 	}
 
@@ -500,11 +504,13 @@ void AutoPlayerAlgorithmImp::notifyFightResult(const FightInfo& fightInfo){
 	//oponnent wins
 	else if (winner == opponentNumber) {
 		decreaseToolFromMyStock(myTool);
-		opponentOccupiedPoints.push_back(point);
+		if(!doOpponentOccupiePoint(X, Y))
+			opponentOccupiedPoints.push_back(point);
 		removePointFromOccupiedPoints(point);
 		if (oponnentTool == 'B' || oponnentTool == 'b') {
 			increaseDestroyedPieces(oponnentTool);
 			--numberOfToolsLeftForOpponent;
+			removePointFromOpponentOccupiedPoints(point);
 			myGameBoard.setCell(X, Y, NO_PLAYER, '#', '#');
 		}
 		else
