@@ -10,43 +10,29 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
+#include "PlayerStatus.h"
 
 using std::cout;
 using std::endl;
 using std::string;
 using std::ofstream;
+using std::unique_ptr;
+using std::make_unique;
 
-enum class PossibleStatus {
-	Valid, File_Error, input_File_Error, Move_File_Error, All_Flags_Captured, Out_Of_Moving_Pieces
-};
+#define PLAYER_ONE 1
+#define PLAYER_TWO 2
 
-class playerStatus {
-	PossibleStatus status;
-	int lineNumber;
-	string line;
-public:
-	explicit playerStatus() : status(PossibleStatus::Valid) {}
-	playerStatus(const playerStatus&) = delete;
-	//playerStatus& operator=(const playerStatus&) = delete;
-	void setPlayerStatus(const PossibleStatus stat, const int lineNumber = -1, const string line = "");
-	PossibleStatus getPlayerStatus() const;
-	int getlineNumber() const;
-	string getline() const;
-};
-
-class Status {
-	playerStatus playerOne;
-	playerStatus playerTwo;
+class GameStatus {
+	unique_ptr<PlayerStatus> playerOne;
+	unique_ptr<PlayerStatus> playerTwo;
 	bool isPositioningPhase;//divide the game play to positioning phase and moving phase
 public:
-	explicit Status();
-	Status(const Status&) = delete;
-	//Status& operator=(const Status&) = delete;
-	void printStatusToFile(ofstream& outputFile) const;
-	PossibleStatus getStatus(int playerNumber) const;
-	void setStatus(int playerNumber, const PossibleStatus status, int lineNumber = -1, const string line = "");
+	explicit GameStatus() : isPositioningPhase(true), playerOne(make_unique<PlayerStatus>()), playerTwo(make_unique<PlayerStatus>()) {};
+	void printGameStatusToFile(ofstream& outputFile) const;
+	PossibleStatus getGameStatus(int playerNumber) const;
+	void setGameStatus(int playerNumber, PossibleStatus status, int lineNumber = -1, const string& line = "");
 	bool getIsPositioningPhase() const;
 	void setIsPositioningPhase(bool b);
 };
-
 #endif

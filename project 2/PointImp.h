@@ -3,17 +3,14 @@
 
 #include "Point.h"
 
-#define NO_OWNER 0
-#define PLAYER_1 1
-#define PLAYER_2 2
-
 class PointImp : public Point {
 	int x, y;
 public:
 	virtual int getX() const override;
 	virtual int getY() const override;
-	void setX(int row);
-	void setY(int column);
+	explicit PointImp() : x(-1), y(-1) {};
+	void PointImp::setX(int row);
+	void PointImp::setY(int col);
 };
 
 #endif

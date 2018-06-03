@@ -3,11 +3,15 @@
 
 #include "PiecePosition.h"
 #include "PointImp.h"
+#include <memory>
+
+using std::make_shared;
+using std::shared_ptr;
 
 #define NO_PLAYER 0
 
 class PiecePositionImp : public PiecePosition {
-	PointImp position;
+	shared_ptr<Point> position;
 	int owner;
 	char piece;
 	char jokerRep;
@@ -16,13 +20,11 @@ public:
 	virtual char getPiece() const;
 	virtual char getJokerRep() const;
 	PiecePositionImp();
-	// Copy constructor
-	//const PiecePositionImp(PiecePositionImp &p);
 	int getOwner() const;
-	void setPiece(char p) ;
-	void setJokerRep(char j) ;
-	void setOwner(int o) ;
-	void setPosition(int x, int y) ;
+	void setPiece(char p);
+	void setJokerRep(char j);
+	void setOwner(int o);
+	void setPosition(int x, int y);
 };
 
 #endif

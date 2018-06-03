@@ -4,21 +4,13 @@
 #include "AutoPlayerAlgorithmImp.h"
 #include "FilePlayerAlgorithmImp.h"
 #include "BoardImp.h"
-#include "gameStatus.h"
+#include "GameStatus.h"
 #include "Point.h"
+#include "HelperFunctions.h"
+#include "FightInfoImp.h"
 
+#include <map>
 
-
-#define ROCK 0
-#define PAPER 1
-#define SCISSORS 2
-#define BOMB 3
-#define FLAG 4
-#define JOKER 5
-#define TIE 0
-#define WIN 1
-#define LOSE 2
-#define STRENGTH_TABLE_SIZE 5
 #define NO_PLAYER 0
 #define PLAYER_ONE 1
 #define PLAYER_TWO 2
@@ -32,48 +24,46 @@
 #define NUM_OF_JOKERS 2
 #define NUM_OF_DIFFERENT_PIECES 6
 
-using namespace std;
+using std::iterator;
+using std::map;
+using std::tuple;
 
 const static int numberOfPieaces[] = { NUM_OF_ROCKS, NUM_OF_PAPERS, NUM_OF_SCISSORS, NUM_OF_BOMBS, NUM_OF_FLAGS, NUM_OF_JOKERS };
 
 class Game {
 	BoardImp gameBoard;
-	Status currentStatus;
-	string player1InitFile;
-	string player2InitFile;
-	string player1MoveFile;
-	string player2MoveFile;
-	string outFile;
+	GameStatus gameStatus;
+	//unique_ptr<Move> move;
 	int piecesToPlace_Player1[NUM_OF_DIFFERENT_PIECES];
 	int piecesToPlace_Player2[NUM_OF_DIFFERENT_PIECES];
 	int piecesOnBoard_Player1[NUM_OF_DIFFERENT_PIECES];
 	int piecesOnBoard_Player2[NUM_OF_DIFFERENT_PIECES];
-	vector <PiecePositionImp> jokersOnBoard_Player1;
-	vector <PiecePositionImp> jokersOnBoard_Player2;
-	vector<unique_ptr<PlayerAlgorithm>> participatingAlgs;
-	vector<unique_ptr<PiecePosition>> positionsVectorPlayer1;
-	vector<unique_ptr<PiecePosition>> positionsVectorPlayer2;
-	int strengthTable[STRENGTH_TABLE_SIZE][STRENGTH_TABLE_SIZE];
-	bool gameOver;
+	//vector <unique_ptr<PiecePosition>> jokersOnBoard_Player1;
+	//vector <unique_ptr<PiecePosition>> jokersOnBoard_Player2;
+	unique_ptr<PlayerAlgorithm> player1Algo;
+	unique_ptr<PlayerAlgorithm> player2Algo;
+	//int strengthTable[STRENGTH_TABLE_SIZE][STRENGTH_TABLE_SIZE];
 public:
-	//explicit Game(string firstAlgoType, string secondAlgoType);
-	explicit Game(string firstAlgoType, string secondAlgoType, string outputFile, string player1InitFile = " ", string player1MoveFile = " ", string player2InitFile = " ", string player2MoveFile = " ");
+	explicit Game(string& firstAlgoType, string& secondAlgoType);
 	void startGame();
-	bool isGameOver();
-	void printBoardToFile(ofstream& outputFile) const;
-	void fillBoardWithInitialPositions(vector<unique_ptr<PiecePosition>>& positionsVectorPlayer1, vector<unique_ptr<PiecePosition>>& positionsVectorPlayer2);
-	bool placePiece(int playerNumber, PiecePositionImp Piece, char piece, int lineNum);
-	int getNumberOfPiecesLeftToPlace(int playerNumber, char Piece);
-	int pieceToNumRep(char Piece);
-	void decreasePieceFromStock(int playerNumber, char piece);
-	void increasePieceOnBoard(int playerNumber, char piece, PiecePositionImp piecePosition);
-	void fight(PiecePositionImp piecePosition, int attackingPlayerNumber);
-	int getFightResult(int x, int y) const;
-	void decreasePieceFromBoard(int playerNumber, char piece, PiecePositionImp piecePosition);
-	bool checkWinningConditions(Status& currentStatus) const;
-	int flagsLeft(int playerNumber) const;
-	bool doPlayerHasMovablePieces(int playerNumber) const;
-	bool aremovingJokers(int playerNumber) const;
+	void verifyInitialPositionsVector(vector<unique_ptr<PiecePosition>> &vector);
 	//bool isGameOver();
+	//void printBoardToFile(ofstream& outputFile) const;
+	void fillBoardWithInitialPositions(vector<unique_ptr<PiecePosition>>& positionsVectorPlayer1, vector<unique_ptr<PiecePosition>>& positionsVectorPlayer2, vector<unique_ptr<FightInfo>>& fightsVector);
+	bool placePiece(PiecePositionImp Piece);
+	unique_ptr<FightInfo> makeMove(unique_ptr<Move> move);
+	void verifyLegalMove(const PointImp& fromPoint, const PointImp& toPoint);
+	//int getNumberOfPiecesLeftToPlace(int playerNumber, char Piece);
+	//int pieceToNumRep(char Piece);
+	//void decreasePieceFromStock(int playerNumber, char piece);
+	//void increasePieceOnBoard(int playerNumber, char piece, PiecePositionImp piecePosition);
+	//void fight(PiecePositionImp piecePosition, int attackingPlayerNumber);
+	//int getFightResult(int x, int y) const;
+	//void decreasePieceFromBoard(int playerNumber, char piece, PiecePositionImp piecePosition);
+	//bool checkWinningConditions() const;
+	//int flagsLeft(int playerNumber) const;
+	//bool doPlayerHasMovablePieces(int playerNumber) const;
+	//bool aremovingJokers(int playerNumber) const;
+	bool isGameOver();
 };
 #endif

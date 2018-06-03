@@ -4,15 +4,20 @@
 #include "Move.h"
 #include "PointImp.h"
 #include "JokerChangeImp.h"
+#include <memory>
+
+using std::unique_ptr;
+using std::make_unique;
 
 class MoveImp : public Move {
-	PointImp srcPoint;
-	PointImp destPoint;
-
+	unique_ptr<Point> srcPoint;
+	unique_ptr<Point> destPoint;
 public:
-	MoveImp(PointImp srcPoint, PointImp destPoint);
+	explicit MoveImp();
 	virtual const Point& getFrom() const;
 	virtual const Point& getTo() const;
+	void setFrom(PointImp p);
+	void setTo(PointImp p);
 };
 
 #endif

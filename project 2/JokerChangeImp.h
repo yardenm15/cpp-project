@@ -7,9 +7,9 @@ class JokerChangeImp : public JokerChange {
 	PointImp changePoint;
 	char jokerRep;
 public:
-	JokerChangeImp(PointImp changePoint, char jokerRep);
+	//JokerChangeImp(PointImp changeP, char jokerR) : changePoint(changeP), jokerRep(jokerR) {};
 	virtual const Point& getJokerChangePosition() const;
-	virtual char getJokerNewRep() const; // R, P, S or B (but NOT J and NOT F)
+	virtual char getJokerNewRep() const;
 };
 
 #endif

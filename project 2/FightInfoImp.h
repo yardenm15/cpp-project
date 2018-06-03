@@ -3,27 +3,29 @@
 
 #include "FightInfo.h"
 #include "PiecePositionImp.h"
-#include "memory"
+#include "HelperFunctions.h"
+#include <memory>
 
-#define TIE 0
-#define PLAYER1_WON 1
-#define PLAYER2_WON 2
-#define NUM_OF_DIFFERENT_SHAPES 5
+#define NO_OWNER 0
+#define PLAYER_1 1
+#define PLAYER_2 2
+
 using std::unique_ptr;
+using std::make_unique;
+using std::move;
 
 class FightInfoImp : public FightInfo {
-	int playerAttacking;
-	PiecePositionImp player1Piece;
-	PiecePositionImp player2Piece;
-	PointImp position;
-	int fightTable[NUM_OF_DIFFERENT_SHAPES][NUM_OF_DIFFERENT_SHAPES];
+	//int playerAttacking;
+	unique_ptr<PiecePosition> player1Piece;
+	unique_ptr<PiecePosition> player2Piece;
+	shared_ptr<Point> position;
 public:
-	virtual const Point& getPosition() const { return position; };
-	virtual char getOpponentPiece() const;
+	virtual const Point& getPosition() const;
+	virtual char getPiece(int player) const;
 	virtual int getWinner() const;
-	//PiecePositionImp getPlayer1PiecePosition() const { return player1Piece; };
-	//PiecePositionImp getPlayer2PiecePosition() const { return player2Piece; };
-	int getPlayerAttacking() const { return playerAttacking; };
+	FightInfoImp(PiecePosition& player1Pie, PiecePosition& player2Pie);
+	char getJokerRep() const;
+	//int getPlayerAttacking() const { return playerAttacking; };
 };
 
 #endif

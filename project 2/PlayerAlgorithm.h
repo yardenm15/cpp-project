@@ -1,5 +1,5 @@
-#ifndef PLAYER_ALGORITHM_H_
-#define PLAYER_ALGORITHM_H_
+#ifndef __PLAYER_ALGORITHM_H_
+#define __PLAYER_ALGORITHM_H_
 
 //--------------------------
 // PlayerAlgorithm Interface
@@ -9,7 +9,7 @@
 
 //--------------------------
 #include <vector>
-#include <memory> // for unique_ptr
+#include <memory>
 #include "Point.h"
 #include "PiecePosition.h"
 #include "Board.h"

@@ -1,11 +1,13 @@
-#include "stdafx.h"
 #include "PiecePositionImp.h"
 
 PiecePositionImp::PiecePositionImp() {
+	position = make_shared<PointImp>();
 	owner = NO_PLAYER;
+	piece = '*';
+	jokerRep = '*';
 }
 const Point& PiecePositionImp::getPosition() const { 
-	return position; 
+	return *position.get(); 
 };
 
 char PiecePositionImp::getPiece() const { 
@@ -33,17 +35,12 @@ void PiecePositionImp::setOwner(int o)  {
 };
 
 void PiecePositionImp::setPosition(int x, int y) {
-	position.setX(x);
-	position.setY(y);
+	position = make_shared<PointImp>();
+	PointImp& pointImp = dynamic_cast<PointImp&>(*position.get());
+	pointImp.setX(x);
+	pointImp.setY(y);
 }
-/*
-PiecePositionImp:: PiecePositionImp(PiecePositionImp &p) {
-	owner = p.getOwner();
-	piece = p.getPiece();
-	jokerRep = p.getJokerRep();
-	position.setX(p.getPosition().getX());
-	position.setY(p.getPosition().getY());
-}*/
+
 
 
 

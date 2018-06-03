@@ -1,5 +1,24 @@
-#include "stdafx.h"
-#include "auxiliaryFunctions.h"
+#include "helperFunctions.h"
+
+//verify correct user input
+bool verifyCommandLineArguments(int argc, char* argv[]) {
+
+	if (argc != 2) {
+		cout << "usage: ./Game  object-vs-object where object is auto or file" << endl;
+		return false;
+	}
+
+	string str = argv[1];
+	size_t found = str.find("-vs-");
+	int stringLength = 4;
+
+	if (found == std::string::npos || (str.substr(0, found) != "auto" && str.substr(0, found) != "file") || (str.substr(found+ stringLength, str.length()) != "auto" && str.substr(found + stringLength, str.length()) != "file")) {
+		cout << "usage: ./Game  object-vs-object where object is auto or file" << endl;
+		return false;
+	}
+
+	return true;
+}
 
 bool isANumber(const string str) {
 	for (string::size_type i = 0; i < str.length(); ++i) {
@@ -85,4 +104,59 @@ bool isMoveFormatCorrect(const vector<string>& tokens) {
 		}
 	}
 	return true;
+}
+
+vector<string> splitLineBySpaces(string line) {
+	//split string by white spaces
+	istringstream buf(line);
+	istream_iterator<string> beg(buf), end;
+	vector<string> tokens(beg, end);
+	return tokens;
+}
+
+bool isArrayEmpty(int arr[STRENGTH_TABLE_SIZE][STRENGTH_TABLE_SIZE]) {
+	for (int i = 0; i < STRENGTH_TABLE_SIZE; ++i) {
+		for (int j = 0; j < STRENGTH_TABLE_SIZE; ++j) {
+			if (arr[i][j] != 0)
+				return false;
+		}
+	}
+	return true;
+}
+
+void initializeStrengthArray(int (&strengthTable)[STRENGTH_TABLE_SIZE][STRENGTH_TABLE_SIZE]) {
+	//rock:
+	strengthTable[ROCK][ROCK] = TIE;
+	strengthTable[ROCK][PAPER] = LOSE;
+	strengthTable[ROCK][SCISSORS] = WIN;
+	strengthTable[ROCK][BOMB] = TIE;
+	strengthTable[ROCK][FLAG] = WIN;
+
+	//Paper:
+	strengthTable[PAPER][ROCK] = WIN;
+	strengthTable[PAPER][PAPER] = TIE;
+	strengthTable[PAPER][SCISSORS] = LOSE;
+	strengthTable[PAPER][BOMB] = TIE;
+	strengthTable[PAPER][FLAG] = WIN;
+
+	//Scissors:
+	strengthTable[SCISSORS][ROCK] = LOSE;
+	strengthTable[SCISSORS][PAPER] = WIN;
+	strengthTable[SCISSORS][SCISSORS] = TIE;
+	strengthTable[SCISSORS][BOMB] = TIE;
+	strengthTable[SCISSORS][FLAG] = WIN;
+
+	//Bomb:
+	strengthTable[BOMB][ROCK] = TIE;
+	strengthTable[BOMB][PAPER] = TIE;
+	strengthTable[BOMB][SCISSORS] = TIE;
+	strengthTable[BOMB][BOMB] = TIE;
+	strengthTable[BOMB][FLAG] = TIE;
+
+	//Flag:
+	strengthTable[FLAG][ROCK] = LOSE;
+	strengthTable[FLAG][PAPER] = LOSE;
+	strengthTable[FLAG][SCISSORS] = LOSE;
+	strengthTable[FLAG][BOMB] = TIE;
+	strengthTable[FLAG][FLAG] = TIE;
 }
