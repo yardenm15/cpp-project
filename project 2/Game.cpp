@@ -1,17 +1,6 @@
 #include "Game.h"
 #include "MoveImp.h"
 
-int main(int argc, char* argv[]) {
-	if (!verifyCommandLineArguments(argc, argv))
-		return EXIT_FAILURE;
-	string firstAlgoType = argv[1];
-	firstAlgoType = firstAlgoType.substr(0, 4);
-	string secondAlgoType = argv[1];
-	secondAlgoType = secondAlgoType.substr(8, 12);
-	Game game(firstAlgoType, secondAlgoType);
-	game.startGame();
-	return EXIT_SUCCESS;
-}
 
 Game::Game(string& firstAlgoType, string& secondAlgoType) {
 
@@ -97,8 +86,11 @@ void Game::startGame() {
 	fillBoardWithInitialPositions(positionsVectorPlayer1, positionsVectorPlayer2, fightsVector);
 
 	//notify players of board and fights
-	player1Algo->notifyOnInitialBoard(gameBoard, fightsVector);
-	player2Algo->notifyOnInitialBoard(gameBoard, fightsVector);
+	(*player1Algo).notifyOnInitialBoard(gameBoard, fightsVector);
+	(*player2Algo).notifyOnInitialBoard(gameBoard, fightsVector);
+
+	//player1Algo->notifyOnInitialBoard(gameBoard, fightsVector);
+	//player2Algo->notifyOnInitialBoard(gameBoard, fightsVector);
 
 	////verify no positioning 2 pieces by the same player at the same cell, no using more pieces than a plyer have,
 	//if (gamestatus.getgamestatus(player_one) != possiblestatus::valid || gamestatus.getgamestatus(player_two) != possiblestatus::valid) {
