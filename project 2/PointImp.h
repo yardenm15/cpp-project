@@ -9,8 +9,8 @@ public:
 	virtual int getX() const override;
 	virtual int getY() const override;
 	explicit PointImp() : x(-1), y(-1) {};
-	void PointImp::setX(int row);
-	void PointImp::setY(int col);
+	void setX(int row);
+	void setY(int col);
 };
 
 #endif
