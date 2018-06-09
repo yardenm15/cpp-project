@@ -18,6 +18,7 @@ public:
 	virtual int getPlayer(const Point& pos) const;
 	explicit BoardImp();
 	vector<vector<shared_ptr<PiecePosition>>>& getBoardReg();//TODO: change to [] operator
+	void setCell(int x, int y, int owner, char piece, char jokerRep);
 	//const vector<vector<PiecePositionImp>>&  getBoard() const ;
 	//void setCell(int x, int y, int owner, char piece, char jokerRep);
 

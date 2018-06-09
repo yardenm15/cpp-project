@@ -18,6 +18,8 @@ public:
 	virtual const Point& getTo() const;
 	void setFrom(PointImp p);
 	void setTo(PointImp p);
+	MoveImp(PointImp srcPoint, PointImp destPoint);
+	MoveImp(const MoveImp & m);
 };
 
 #endif

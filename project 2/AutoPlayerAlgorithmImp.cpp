@@ -1,6 +1,4 @@
-#include "stdafx.h"
 #include "AutoPlayerAlgorithmImp.h"
-#include "auxiliaryFunctions.h"
 
 AutoPlayerAlgorithmImp::AutoPlayerAlgorithmImp(int playerNum) {
 	myPlayerNumber = playerNum;

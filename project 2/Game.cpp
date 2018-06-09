@@ -22,14 +22,14 @@ Game::Game(string& firstAlgoType, string& secondAlgoType) {
 	if (firstAlgoType == "file")
 		player1Algo = make_unique<FilePlayerAlgorithmImp>();
 	else { //auto
-		player1Algo = make_unique<AutoPlayerAlgorithmImp>();
+		player1Algo = make_unique<AutoPlayerAlgorithmImp>(PLAYER_1);
 		isPlayer1File = false;
 	}
 
 	if (secondAlgoType == "file")
 		player2Algo = make_unique<FilePlayerAlgorithmImp>();
 	else { //auto
-		player2Algo = make_unique<AutoPlayerAlgorithmImp>();
+		player2Algo = make_unique<AutoPlayerAlgorithmImp>(PLAYER_2);
 		isPlayer2File = false;
 	}
 
