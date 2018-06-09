@@ -40,10 +40,7 @@ void AutoPlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 		PiecePositionImp Piece;
 		Piece.setOwner(player);
 		Piece.setJokerRep('#');
-		if (player == PLAYER_ONE)
-			Piece.setPiece('F');
-		else
-			Piece.setPiece('f');
+		Piece.setPiece('F');
 		x = getRandomPosition();
 		y = getRandomPosition();
 		pairs p;
@@ -78,10 +75,7 @@ void AutoPlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 		PiecePositionImp Piece;
 		Piece.setOwner(player);
 		Piece.setJokerRep('#');
-		if (player == PLAYER_ONE)
-			Piece.setPiece('B');
-		else
-			Piece.setPiece('b');
+		Piece.setPiece('B');
 		x = getRandomPosition();
 		y = getRandomPosition();
 		pairs p;
@@ -115,10 +109,8 @@ void AutoPlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 		PiecePositionImp Piece;
 		Piece.setOwner(player);
 		Piece.setJokerRep('#');
-		if (player == PLAYER_ONE)
-			Piece.setPiece('S');
-		else
-			Piece.setPiece('s');
+		Piece.setPiece('S');
+
 		x = getRandomPosition();
 		y = getRandomPosition();
 		pairs p;
@@ -152,10 +144,8 @@ void AutoPlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 		PiecePositionImp Piece;
 		Piece.setOwner(player);
 		Piece.setJokerRep('#');
-		if (player == PLAYER_ONE)
-			Piece.setPiece('P');
-		else
-			Piece.setPiece('p');
+		Piece.setPiece('P');
+
 		x = getRandomPosition();
 		y = getRandomPosition();
 		pairs p;
@@ -189,10 +179,8 @@ void AutoPlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 		PiecePositionImp Piece;
 		Piece.setOwner(player);
 		Piece.setJokerRep('#');
-		if (player == PLAYER_ONE)
-			Piece.setPiece('R');
-		else
-			Piece.setPiece('r');
+		Piece.setPiece('R');
+
 		x = getRandomPosition();
 		y = getRandomPosition();
 		pairs p;
@@ -225,10 +213,8 @@ void AutoPlayerAlgorithmImp::getInitialPositions(int player, std::vector<unique_
 		int x, y;
 		PiecePositionImp Piece;
 		Piece.setOwner(player);
-		if (player == PLAYER_ONE)
-			Piece.setPiece('J');
-		else
-			Piece.setPiece('j');
+		Piece.setPiece('J');
+
 		x = getRandomPosition();
 		y = getRandomPosition();
 		pairs p;
@@ -274,28 +260,15 @@ char AutoPlayerAlgorithmImp::getRandomJokerRep(int player) {
 	std::uniform_int_distribution<std::mt19937::result_type> dist6(1, 4); // distribution in range [1, 4]
 
 	int num = dist6(rng);
-	if (player == PLAYER_ONE) {
-		if (num == 1)
-			return 'S';
-		else if (num == 2)
-			return 'R';
-		else if (num == 3)
-			return 'P';
-		else
-			return 'B';
-
-	}
-	else {
-		if (num == 1)
-			return 's';
-		else if (num == 2)
-			return 'r';
-		else if (num == 3)
-			return 'p';
-		else
-			return 'b';
-
-	}
+	
+	if (num == 1)
+		return 'S';
+	else if (num == 2)
+		return 'R';
+	else if (num == 3)
+		return 'P';
+	else
+		return 'B';
 
 }
 
@@ -308,43 +281,43 @@ int AutoPlayerAlgorithmImp::getRandomNumInRange(int size) {
 }
 
 void AutoPlayerAlgorithmImp::decreaseToolFromMyStock(char Piece) {
-	if (Piece == 'R' || Piece == 'r')
+	if (Piece == 'R')
 		--numberOfRocksOwning;
-	else if (Piece == 'P' || Piece == 'p')
+	else if (Piece == 'P')
 		--numberOfPapersOwning;
-	else if (Piece == 'S' || Piece == 's')
+	else if (Piece == 'S')
 		--numberOfScissorsOwning;
-	else if (Piece == 'B' || Piece == 'b')
+	else if (Piece == 'B')
 		--numberOfBombsOwning;
-	else if (Piece == 'F' || Piece == 'f')
+	else if (Piece == 'F')
 		--numberOfFlagsOwning;
-	else if (Piece == 'J' || Piece == 'j')
+	else if (Piece == 'J')
 		--numberOfJokersOwning;
 	
 }
 
 void AutoPlayerAlgorithmImp::increaseDestroyedPieces(char Piece) {
-	if (Piece == 'R' || Piece == 'r') {
+	if (Piece == 'R') {
 		++numOfRocksDestroyedByMe;
 		if (numOfRocksDestroyedByMe > NUM_OF_ROCKS)
 			++numberOfJokersDestroyedByMe;
 	}
-	else if (Piece == 'P' || Piece == 'p') {
+	else if (Piece == 'P') {
 		++numOfPapersDestroyedByMe;
 		if (numOfPapersDestroyedByMe > NUM_OF_PAPERS)
 			++numberOfJokersDestroyedByMe;
 	}
-	else if (Piece == 'S' || Piece == 's') {
+	else if (Piece == 'S') {
 		++numOfScissorsDestroyedByMe;
 		if (numOfScissorsDestroyedByMe > NUM_OF_SCISSORS)
 			++numberOfJokersDestroyedByMe;
 	}
-	else if (Piece == 'B' || Piece == 'b') {
+	else if (Piece == 'B') {
 		++numOfBombsDestroyedByMe;
 		if (numOfBombsDestroyedByMe > NUM_OF_BOMBS)
 			++numberOfJokersDestroyedByMe;
 	}
-	else if (Piece == 'F' || Piece == 'f') {
+	else if (Piece == 'F') {
 		++numOfFlagsDestroyedByMe;
 	}
 
@@ -413,7 +386,7 @@ void AutoPlayerAlgorithmImp::notifyOnInitialBoard(const Board& b, const std::vec
 			//update Occupied Points
 			removePointFromOccupiedPoints(point);
 
-			if (OpponentPiece == 'B' || OpponentPiece == 'b') {
+			if (OpponentPiece == 'B') {
 				increaseDestroyedPieces(OpponentPiece);
 				--numberOfToolsLeftForOpponent;
 				myGameBoard.setCell(x, y, NO_PLAYER, '#', '#');
@@ -508,7 +481,7 @@ void AutoPlayerAlgorithmImp::notifyFightResult(const FightInfo& fightInfo){
 		if(!doOpponentOccupiePoint(X, Y))
 			opponentOccupiedPoints.push_back(point);
 		removePointFromOccupiedPoints(point);
-		if (oponnentTool == 'B' || oponnentTool == 'b') {
+		if (oponnentTool == 'B') {
 			increaseDestroyedPieces(oponnentTool);
 			--numberOfToolsLeftForOpponent;
 			removePointFromOpponentOccupiedPoints(point);
@@ -538,7 +511,6 @@ bool AutoPlayerAlgorithmImp::hasMovingPieces() {
 
 unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 
-
 	
 	PointImp point;
 	PointImp src, dest;
@@ -556,8 +528,7 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		whichPointToMove = getRandomNumInRange(mySize);
 		fromX = myOccupiedPoints.at(whichPointToMove).getX();
 		fromY = myOccupiedPoints.at(whichPointToMove).getY();
-		while ((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'F' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'f'
-			|| (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'B' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'b') {
+		while ((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'F' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'B') {
 				
 			whichPointToMove = getRandomNumInRange(mySize);
 			fromX = myOccupiedPoints.at(whichPointToMove).getX();
@@ -607,13 +578,7 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		for (int i = 0; i < oponnentSize; ++i) {
 			if ((toolThatOponnentAte = (*(myGameBoard.getBoardReg()[opponentOccupiedPoints[i].getX() - 1][opponentOccupiedPoints[i].getY() - 1])).getJokerRep()) != '#') {
 				for (int j = 0; j < mySize; ++j) {
-					if ((*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != toolThatOponnentAte
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'F'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'f'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'B'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'b'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'J'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'j') {
+					if ((*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != toolThatOponnentAte && (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'F' && (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'B' && (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'J') {
 
 						fromX = myOccupiedPoints.at(j).getX();
 						fromY = myOccupiedPoints.at(j).getY();
@@ -650,9 +615,7 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		for (int i = 0; i < oponnentSize; ++i) {
 			if ((toolThatOponnentAte = (*(myGameBoard.getBoardReg()[opponentOccupiedPoints[i].getX() - 1][opponentOccupiedPoints[i].getY() - 1])).getJokerRep()) != '#') {
 				for (int j = 0; j < mySize; ++j) {
-					if ( (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != toolThatOponnentAte
-						&& ((*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() == 'J'
-						|| (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() == 'j')) {
+					if ( (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != toolThatOponnentAte && ((*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() == 'J')) {
 
 						fromX = myOccupiedPoints.at(j).getX();
 						fromY = myOccupiedPoints.at(j).getY();
@@ -692,8 +655,7 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		whichPointToMove = getRandomNumInRange(mySize);
 		fromX = myOccupiedPoints.at(whichPointToMove).getX();
 		fromY = myOccupiedPoints.at(whichPointToMove).getY();
-		while ((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'F' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'f'
-			|| (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'B' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'b') {
+		while ((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'F' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'B' ) {
 			whichPointToMove = getRandomNumInRange(mySize);
 			fromX = myOccupiedPoints.at(whichPointToMove).getX();
 			fromY = myOccupiedPoints.at(whichPointToMove).getY();
@@ -739,38 +701,19 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 }
 
 char AutoPlayerAlgorithmImp::getStrongJokerRep(int playerNumber, char toolThatOponnentAte) {
-	if (playerNumber == PLAYER_ONE) {
-		if (toolThatOponnentAte == 'R' ) {
-			return  'S';
-		}
-		else if (toolThatOponnentAte == 'P') {
-			return 'R';
-		}
-		else if (toolThatOponnentAte == 'S') {
-			return 'P';
-		}
-		else {
+	
+	if (toolThatOponnentAte == 'R' ) {
+		return  'S';
+	}
+	else if (toolThatOponnentAte == 'P') {
 		return 'R';
-		}
-
 	}
-
+	else if (toolThatOponnentAte == 'S') {
+		return 'P';
+	}
 	else {
-		if (toolThatOponnentAte == 'R') {
-			return  's';
-		}
-		else if (toolThatOponnentAte == 'P') {
-			return 'r';
-		}
-		else if (toolThatOponnentAte == 'S') {
-			return 'p';
-		}
-		else {
-			return 'r';
-		}
-
+		return 'R';
 	}
-
 }
 
 bool AutoPlayerAlgorithmImp::doIOccupiePoint(int X, int Y) {
