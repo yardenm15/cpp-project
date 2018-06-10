@@ -12,11 +12,11 @@ PossibleStatus GameStatus::getGameStatus(int playerNumber) const {
 	return playerNumber == PLAYER_ONE ? playerOne->getPlayerStatus() : playerTwo->getPlayerStatus();
 }
 
-void GameStatus::setGameStatus(int playerNumber, PossibleStatus st, int lineNum, const string& li) {
+void GameStatus::setGameStatus(int playerNumber, PossibleStatus st) {
 	if (playerNumber == PLAYER_ONE)
-		playerOne->setPlayerStatus(st, lineNum, li);
+		playerOne->setPlayerStatus(st);
 	else
-		playerTwo->setPlayerStatus(st, lineNum, li);
+		playerTwo->setPlayerStatus(st);
 }
 
 bool GameStatus::getIsPositioningPhase() const {
@@ -30,7 +30,7 @@ void GameStatus::setIsPositioningPhase(bool b) {
 void GameStatus::printGameStatusToFile(ofstream& outputFile) const {
 
 	//tie - error in both players positioning files
-	if (playerOne->getPlayerStatus() == PossibleStatus::Position_File_Error && playerTwo->getPlayerStatus() == PossibleStatus::Position_File_Error) {
+	if (playerOne->getPlayerStatus() == PossibleStatus::Position_Error && playerTwo->getPlayerStatus() == PossibleStatus::Position_Error) {
 		outputFile << "Winner: 0" << endl;
 		outputFile << "Reason: " << "Bad Positioning input file for both players - player 1: line " << playerOne->getlineNumber() + 1 << ", player 2: line " << playerTwo->getlineNumber() + 1 << endl;
 	}
@@ -51,10 +51,10 @@ void GameStatus::printGameStatusToFile(ofstream& outputFile) const {
 	else if (playerOne->getPlayerStatus() != PossibleStatus::Valid) {
 		outputFile << "Winner: 2" << endl;
 		switch (GameStatus::playerOne->getPlayerStatus()) {
-		case PossibleStatus::Position_File_Error:
+		case PossibleStatus::Position_Error:
 			outputFile << "Reason: " << "Bad Positioning input file for player " << PLAYER_ONE << " - line " << playerOne->getlineNumber() << endl;
 			break;
-		case PossibleStatus::Move_File_Error:
+		case PossibleStatus::Move_Error:
 			outputFile << "Reason: " << "Bad Moves input file for player " << PLAYER_ONE << " - line " << playerOne->getlineNumber() << endl;
 			break;
 		case PossibleStatus::All_Flags_Captured:
@@ -72,10 +72,10 @@ void GameStatus::printGameStatusToFile(ofstream& outputFile) const {
 	else {
 		outputFile << "Winner: 1" << endl;
 		switch (GameStatus::playerTwo->getPlayerStatus()) {
-		case PossibleStatus::Position_File_Error:
+		case PossibleStatus::Position_Error:
 			outputFile << "Reason: " << "Bad Positioning input file for player " << PLAYER_TWO << " - line " << playerTwo->getlineNumber() << endl;
 			break;
-		case PossibleStatus::Move_File_Error:
+		case PossibleStatus::Move_Error:
 			outputFile << "Reason: " << "Bad Moves input file for player " << PLAYER_TWO << " - line " << playerTwo->getlineNumber() << endl;
 			break;
 		case PossibleStatus::All_Flags_Captured:

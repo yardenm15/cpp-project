@@ -23,6 +23,7 @@
 #define NUM_OF_FLAGS 1
 #define NUM_OF_JOKERS 2
 #define NUM_OF_DIFFERENT_PIECES 6
+#define NUM_OF_PLAYERS 3 //including NO_PLAYER
 
 using std::iterator;
 using std::map;
@@ -34,10 +35,12 @@ class Game {
 	BoardImp gameBoard;
 	GameStatus gameStatus;
 	//unique_ptr<Move> move;
-	int piecesToPlace_Player1[NUM_OF_DIFFERENT_PIECES];
-	int piecesToPlace_Player2[NUM_OF_DIFFERENT_PIECES];
-	int piecesOnBoard_Player1[NUM_OF_DIFFERENT_PIECES];
-	int piecesOnBoard_Player2[NUM_OF_DIFFERENT_PIECES];
+	int piecesToPlace[NUM_OF_PLAYERS][NUM_OF_DIFFERENT_PIECES];
+	int piecesOnBoard[NUM_OF_PLAYERS][NUM_OF_DIFFERENT_PIECES];
+	//int piecesToPlace_Player1[NUM_OF_DIFFERENT_PIECES];
+	//int piecesToPlace_Player2[NUM_OF_DIFFERENT_PIECES];
+	//int piecesOnBoard_Player1[NUM_OF_DIFFERENT_PIECES];
+	//int piecesOnBoard_Player2[NUM_OF_DIFFERENT_PIECES];
 	//vector <unique_ptr<PiecePosition>> jokersOnBoard_Player1;
 	//vector <unique_ptr<PiecePosition>> jokersOnBoard_Player2;
 	unique_ptr<PlayerAlgorithm> player1Algo;
@@ -46,13 +49,14 @@ class Game {
 public:
 	explicit Game(string& firstAlgoType, string& secondAlgoType);
 	void startGame();
-	void verifyInitialPositionsVector(vector<unique_ptr<PiecePosition>> &vector);
-	//bool isGameOver();
+	void verifyInitialPositionsVector(vector<unique_ptr<PiecePosition>> &vector, const size_t playerNumber);
+	bool isGameOver();
 	//void printBoardToFile(ofstream& outputFile) const;
 	void fillBoardWithInitialPositions(vector<unique_ptr<PiecePosition>>& positionsVectorPlayer1, vector<unique_ptr<PiecePosition>>& positionsVectorPlayer2, vector<unique_ptr<FightInfo>>& fightsVector);
 	bool placePiece(PiecePositionImp Piece);
 	unique_ptr<FightInfo> makeMove(unique_ptr<Move> move);
-	void verifyLegalMove(const PointImp& fromPoint, const PointImp& toPoint);
+	bool verifyLegalMove(const PointImp& fromPoint, const PointImp& toPoint);
+	int decreasePieceToPlace(const int playerNumber, char pieceChar);
 	//int getNumberOfPiecesLeftToPlace(int playerNumber, char Piece);
 	//int pieceToNumRep(char Piece);
 	//void decreasePieceFromStock(int playerNumber, char piece);
@@ -64,6 +68,5 @@ public:
 	//int flagsLeft(int playerNumber) const;
 	//bool doPlayerHasMovablePieces(int playerNumber) const;
 	//bool aremovingJokers(int playerNumber) const;
-	bool isGameOver();
 };
 #endif

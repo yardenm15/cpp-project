@@ -122,7 +122,7 @@ void FilePlayerAlgorithmImp::parseToPiecePosition(int lineNumber, string line, i
 	}
 	//illegal line
 	else {
-		playerStatus->setPlayerStatus(PossibleStatus::Position_File_Error, lineNumber + 1, line);
+		playerStatus->setPlayerStatus(PossibleStatus::Position_Error, lineNumber + 1, line);
 		cout << "Player " << player << " has a faulty format in line " << lineNumber + 1 << " : " << endl \
 			<< line << endl \
 			<< "Correct format is:" << endl \

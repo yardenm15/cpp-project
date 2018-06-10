@@ -6,7 +6,7 @@
 using std::string;
 
 enum class PossibleStatus {
-	Valid, File_Error, Position_File_Error, Move_File_Error, All_Flags_Captured, Out_Of_Moving_Pieces
+	Valid, File_Error, Position_Error, Move_Error, All_Flags_Captured, Out_Of_Moving_Pieces
 };
 
 class PlayerStatus {

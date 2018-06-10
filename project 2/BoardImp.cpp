@@ -20,9 +20,8 @@
 	//	vector<unique_ptr<PiecePosition>> result(NUMBER_OF_COLUMNS*NUMBER_OF_ROWS);
 	//	return result;
 	//}
-
-	vector<vector<shared_ptr<PiecePosition>>>& BoardImp::getBoardReg() {
-		return board;
+	vector<shared_ptr<PiecePosition>>& BoardImp::operator[](size_t i) {
+		return board[i];
 	}
 
 	void BoardImp::setCell(int x, int y, int owner, char piece, char jokerRep) {

@@ -35,25 +35,126 @@ Game::Game(string& firstAlgoType, string& secondAlgoType) {
 
 	//initialize number of pieces each player has
 	for (int i = 0; i < NUM_OF_DIFFERENT_PIECES; ++i) {
-		piecesToPlace_Player1[i] = numberOfPieaces[i];
-		piecesToPlace_Player2[i] = numberOfPieaces[i];
+		piecesToPlace[PLAYER_1][i] = numberOfPieaces[i];
+		piecesToPlace[PLAYER_2][i] = numberOfPieaces[i];
+	}
+
+}
+
+//verify both players status is still valid
+bool Game::isGameOver() {
+	return !((gameStatus.getGameStatus(PLAYER_1) == PossibleStatus::Valid) && (gameStatus.getGameStatus(PLAYER_2) == PossibleStatus::Valid));
+}
+
+//decrease a piece from pieces to place for player. return false if player is out of pieces
+int Game::decreasePieceToPlace(const int playerNumber, char pieceChar) {
+	switch (pieceChar) {
+		case('R'):
+			if (piecesToPlace[playerNumber][ROCK] > 0) {
+				piecesToPlace[playerNumber][ROCK] -= 1;
+				return true;
+			}
+			break;
+		case('P'):
+			if (piecesToPlace[playerNumber][PAPER] > 0) {
+				piecesToPlace[playerNumber][PAPER] -= 1;
+				return true;
+			}
+			break;
+		case('S'):
+			if (piecesToPlace[playerNumber][SCISSORS] > 0) {
+				piecesToPlace[playerNumber][SCISSORS] -= 1;
+				return true;
+			}
+			break;
+		case('B'):
+			if (piecesToPlace[playerNumber][BOMB] > 0) {
+				piecesToPlace[playerNumber][BOMB] -= 1;
+				return true;
+			}
+			break;
+		case('F'):
+			if (piecesToPlace[playerNumber][FLAG] > 0) {
+				piecesToPlace[playerNumber][FLAG] -= 1;
+				return true;
+			}
+			break;
+		case('J'):
+			if (piecesToPlace[playerNumber][JOKER] > 0) {
+				piecesToPlace[playerNumber][JOKER] -= 1;
+				return true;
+			}
+			break;
+	}
+	return false;
+}
+
+//verify legality of positions vector from player
+void Game::verifyInitialPositionsVector(vector<unique_ptr<PiecePosition>> &playerVector, const size_t playerNumber) {
+	tuple<int, int> tempTuple;
+	map<tuple<int, int>, unique_ptr<PiecePosition>> myMap;
+	size_t firstVectorSize = playerVector.size();
+
+
+	//fill map with player vector and check legality
+	for (size_t i = 0; i < firstVectorSize; ++i) {
+		tempTuple = make_tuple(playerVector[i]->getPosition().getX(), playerVector[i]->getPosition().getY());
+		auto search = myMap.find(tempTuple);
+
+		//check and decrease number of pieces player has to place
+		if (!decreasePieceToPlace(playerNumber, playerVector[i]->getPiece())) {
+			cout << "Player " << playerNumber << " tried to place a " << playerVector[i]->getPiece() << " at point (" << get<0>(tempTuple) << "," << get<1>(tempTuple) << ") when the max number of pieces to place has exceede" << endl;
+		}
+
+		//check that point is in board boundries
+		else if ((get<0>(tempTuple) > 10 || get<0>(tempTuple) < 1) || (get<0>(tempTuple) > 10 || get<0>(tempTuple) < 1)) {
+			cout << "Player " << playerNumber << " tried to place a " << playerVector[i]->getPiece() << " at point (" << get<0>(tempTuple) << "," << get<1>(tempTuple) << ") which is out of bound" << endl;
+		}
+
+		//check for same point positioning
+		else if (search != myMap.end()) {
+			cout << "Player " << playerNumber << " tried to place a " << playerVector[i]->getPiece() << endl \
+				<< "where he already placed there a " << myMap[tempTuple]->getPiece() << " before." << endl;
+
+		}
+
+		//move from vector to map
+		else {
+			myMap[tempTuple] = move(playerVector[i]);
+			continue;
+		}
+
+		gameStatus.setGameStatus(playerNumber, PossibleStatus::Position_Error);
+		return;
+	}
+
+	//by this point all player positions are legal and are at the map
+
+	//move back from map to vector
+	auto search = myMap.begin();
+	for (size_t i = 0; i < firstVectorSize; ++i) {
+		playerVector[i] = move(search->second);
+		search++;
 	}
 
 }
 
 //TODO: write the function
-bool Game::isGameOver() {
-	return !((gameStatus.getGameStatus(PLAYER_1) == PossibleStatus::Valid) && (gameStatus.getGameStatus(PLAYER_2) == PossibleStatus::Valid));
-}
+bool Game::verifyLegalMove(const PointImp& fromPoint, const PointImp& toPoint) {
+	//verify points within boundries
+	if (gameBoard[fromPoint.getX()][fromPoint.getY()]) {
 
-//TODO: write the function
-void Game::verifyInitialPositionsVector(vector<unique_ptr<PiecePosition>> &vector) {
-	cout << typeid(player1Algo.get()).name();
-}
+	}
 
-//TODO: write the function
-void Game::verifyLegalMove(const PointImp& fromPoint, const PointImp& toPoint) {
+	//verify player has a piece at from point
+	else if(false){
+	}
 
+	//verify player doesn't already has a piece at to point
+	else if(false){
+	}
+
+	return false;
 }
 
 unique_ptr<FightInfo> Game::makeMove(unique_ptr<Move> move) {
@@ -61,8 +162,8 @@ unique_ptr<FightInfo> Game::makeMove(unique_ptr<Move> move) {
 	const PointImp toPoint = dynamic_cast<const PointImp&>(move->getTo());
 	verifyLegalMove(fromPoint, toPoint);
 	//move is legal at this point
-	PiecePositionImp& fromPiece = dynamic_cast<PiecePositionImp&>(*gameBoard.getBoardReg()[fromPoint.getX()][fromPoint.getY()]);
-	PiecePositionImp& toPiece = dynamic_cast<PiecePositionImp&>(*gameBoard.getBoardReg()[toPoint.getX()][toPoint.getY()]);
+	PiecePositionImp& fromPiece = dynamic_cast<PiecePositionImp&>(*gameBoard[fromPoint.getX()][fromPoint.getY()]);
+	PiecePositionImp& toPiece = dynamic_cast<PiecePositionImp&>(*gameBoard[toPoint.getX()][toPoint.getY()]);
 	//TODO: continue from here
 	if (toPiece.getOwner() != NO_PLAYER)
 		return nullptr;
@@ -78,15 +179,11 @@ void Game::startGame() {
 	player1Algo->getInitialPositions(PLAYER_1, positionsVectorPlayer1);
 	player2Algo->getInitialPositions(PLAYER_2, positionsVectorPlayer2);
 
-	//verify game is valid so far TODO:handle errors properly
-	if (isGameOver() == true)
-		return;
+	//verify valid positions from both players
+	verifyInitialPositionsVector(positionsVectorPlayer1, PLAYER_1);
+	verifyInitialPositionsVector(positionsVectorPlayer2, PLAYER_2);
 
-	//verify valid positions 
-	verifyInitialPositionsVector(positionsVectorPlayer1);
-	verifyInitialPositionsVector(positionsVectorPlayer2);
-
-	//verify game is valid so far TODO:write gameover properly
+	//verify game is valid so far
 	if (isGameOver() == true)
 		return;
 
@@ -99,13 +196,6 @@ void Game::startGame() {
 	//notify players of board and fights
 	player1Algo->notifyOnInitialBoard(gameBoard, fightsVector);
 	player2Algo->notifyOnInitialBoard(gameBoard, fightsVector);
-
-	////verify no positioning 2 pieces by the same player at the same cell, no using more pieces than a plyer have,
-	//if (gamestatus.getgamestatus(player_one) != possiblestatus::valid || gamestatus.getgamestatus(player_two) != possiblestatus::valid) {
-	//	gamestatus.printgamestatustofile(outputfile);
-	//	printboardtofile(outputfile);
-	//	return;
-	//}
 
 	//open output file
 	ofstream outputFile("rps.output");
@@ -290,13 +380,13 @@ void Game::fillBoardWithInitialPositions(vector<unique_ptr<PiecePosition>>& posi
 		}
 		piecePositionImp.setPosition(fightsVector[i]->getPosition().getX(), fightsVector[i]->getPosition().getY());
 		piecePositionImp.setJokerRep(fightInfoImpRef.getJokerRep());
-		gameBoard.getBoardReg()[fightsVector[i]->getPosition().getX() - 1][fightsVector[i]->getPosition().getY() - 1] = make_shared<PiecePositionImp>(piecePositionImp);
+		gameBoard[fightsVector[i]->getPosition().getX() - 1][fightsVector[i]->getPosition().getY() - 1] = make_shared<PiecePositionImp>(piecePositionImp);
 	}
 
 	//fill board from map
 	for (map<tuple<int, int>, unique_ptr<PiecePosition>>::iterator it = myMap.begin(); it != myMap.end(); ++it) {
 		PiecePositionImp& piecePositionImpRef = dynamic_cast<PiecePositionImp&>(*(it->second));
-		gameBoard.getBoardReg()[get<0>(it->first) - 1][get<1>(it->first) - 1] = make_shared<PiecePositionImp>(piecePositionImpRef);
+		gameBoard[get<0>(it->first) - 1][get<1>(it->first) - 1] = make_shared<PiecePositionImp>(piecePositionImpRef);
 	}
 
 }

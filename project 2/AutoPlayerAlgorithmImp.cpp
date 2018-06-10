@@ -399,7 +399,7 @@ void AutoPlayerAlgorithmImp::notifyOnInitialBoard(const Board& b, const std::vec
 		point.setX(y);
 		char OpponentPiece = fights.at(i).get()->getPiece(opponentNumber);
 		//char myPiece = myGameBoard.getBoard()[x-1][y-1].getPiece();
-		char myPiece = (*(myGameBoard.getBoardReg()[x - 1][y - 1])).getPiece();
+		char myPiece = myGameBoard[x - 1][y - 1]->getPiece();
 		int winner = fights.at(i).get()->getWinner();
 		//I win
 		if (winner == myPlayerNumber) {
@@ -446,7 +446,7 @@ void AutoPlayerAlgorithmImp::notifyOnInitialBoard(const Board& b, const std::vec
 			int owningPlayer = b.getPlayer(p);
 			if (owningPlayer == opponentNumber) {
 				opponentOccupiedPoints.push_back(p);
-				if((*(myGameBoard.getBoardReg()[x - 1][y - 1])).getJokerRep() == '#')
+				if(myGameBoard[x - 1][y - 1]->getJokerRep() == '#')
 					myGameBoard.setCell(x, y, owningPlayer, '#', '#');
 			}
 
@@ -464,13 +464,13 @@ void AutoPlayerAlgorithmImp::notifyOnOpponentMove(const Move& move){
 	point.setX(fromX);
 	point.setY(fromY);
 
-	char rep = (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getJokerRep();
+	char rep = myGameBoard[fromX - 1][fromY - 1]->getJokerRep();
 	
 	removePointFromOpponentOccupiedPoints(point);
 	myGameBoard.setCell(fromX, fromY, NO_PLAYER, '#', '#');
 
 	
-	PiecePositionImp& Piece = dynamic_cast<PiecePositionImp&>(*myGameBoard.getBoardReg()[toX - 1][toY - 1]);
+	PiecePositionImp& Piece = dynamic_cast<PiecePositionImp&>(*myGameBoard[toX - 1][toY - 1]);
 	//case no fight move him in my board
 	if ( Piece.getOwner() != myPlayerNumber ) {
 		myGameBoard.setCell(toX, toY, opponentNumber, '#', rep);
@@ -556,8 +556,8 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		whichPointToMove = getRandomNumInRange(mySize);
 		fromX = myOccupiedPoints.at(whichPointToMove).getX();
 		fromY = myOccupiedPoints.at(whichPointToMove).getY();
-		while ((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'F' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'f'
-			|| (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'B' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'b') {
+		while (myGameBoard[fromX - 1][fromY - 1]->getPiece() == 'F' || myGameBoard[fromX - 1][fromY - 1]->getPiece() == 'f'
+			|| myGameBoard[fromX - 1][fromY - 1]->getPiece() == 'B' || myGameBoard[fromX - 1][fromY - 1]->getPiece() == 'b') {
 				
 			whichPointToMove = getRandomNumInRange(mySize);
 			fromX = myOccupiedPoints.at(whichPointToMove).getX();
@@ -579,7 +579,7 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		//in case no fight
 		if (!doOpponentOccupiePoint(toX, toY)) {
 			myOccupiedPoints.push_back(dest);
-			myGameBoard.setCell(toX, toY, myPlayerNumber, (*(myGameBoard.getBoardReg()[fromX][fromY])).getPiece(), (*(myGameBoard.getBoardReg()[fromX][fromY])).getJokerRep());
+			myGameBoard.setCell(toX, toY, myPlayerNumber, myGameBoard[fromX][fromY]->getPiece(), myGameBoard[fromX][fromY]->getJokerRep());
 			removePointFromOccupiedPoints(src);
 			myGameBoard.setCell(fromX, fromY, NO_PLAYER, '#', '#');
 		}
@@ -587,9 +587,9 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		else {
 			//save data
 			auxPiece.setPosition(fromX, fromY);
-			auxPiece.setPiece((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece());
+			auxPiece.setPiece(myGameBoard[fromX - 1][fromY - 1]->getPiece());
 			auxPiece.setOwner(myPlayerNumber);
-			auxPiece.setJokerRep((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getJokerRep());
+			auxPiece.setJokerRep(myGameBoard[fromX - 1][fromY - 1]->getJokerRep());
 
 			removePointFromOccupiedPoints(src);
 			myGameBoard.setCell(fromX, fromY, NO_PLAYER, '#', '#');
@@ -605,15 +605,15 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		whichPointToFight = getRandomNumInRange(oponnentSize);
 		char toolThatOponnentAte;
 		for (int i = 0; i < oponnentSize; ++i) {
-			if ((toolThatOponnentAte = (*(myGameBoard.getBoardReg()[opponentOccupiedPoints[i].getX() - 1][opponentOccupiedPoints[i].getY() - 1])).getJokerRep()) != '#') {
+			if ((toolThatOponnentAte = myGameBoard[opponentOccupiedPoints[i].getX() - 1][opponentOccupiedPoints[i].getY() - 1]->getJokerRep()) != '#') {
 				for (int j = 0; j < mySize; ++j) {
-					if ((*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != toolThatOponnentAte
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'F'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'f'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'B'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'b'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'J'
-						&& (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != 'j') {
+					if (myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() != toolThatOponnentAte
+						&& myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() != 'F'
+						&& myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() != 'f'
+						&& myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() != 'B'
+						&& myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() != 'b'
+						&& myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() != 'J'
+						&& myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() != 'j') {
 
 						fromX = myOccupiedPoints.at(j).getX();
 						fromY = myOccupiedPoints.at(j).getY();
@@ -629,9 +629,9 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 
 						//save data
 						auxPiece.setPosition(fromX, fromY);
-						auxPiece.setPiece((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece());
+						auxPiece.setPiece(myGameBoard[fromX - 1][fromY - 1]->getPiece());
 						auxPiece.setOwner(myPlayerNumber);
-						auxPiece.setJokerRep((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getJokerRep());
+						auxPiece.setJokerRep(myGameBoard[fromX - 1][fromY - 1]->getJokerRep());
 
 						removePointFromOccupiedPoints(src);
 						myGameBoard.setCell(fromX, fromY, NO_PLAYER, '#', '#');
@@ -648,11 +648,11 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 
 
 		for (int i = 0; i < oponnentSize; ++i) {
-			if ((toolThatOponnentAte = (*(myGameBoard.getBoardReg()[opponentOccupiedPoints[i].getX() - 1][opponentOccupiedPoints[i].getY() - 1])).getJokerRep()) != '#') {
+			if ((toolThatOponnentAte = myGameBoard[opponentOccupiedPoints[i].getX() - 1][opponentOccupiedPoints[i].getY() - 1]->getJokerRep()) != '#') {
 				for (int j = 0; j < mySize; ++j) {
-					if ( (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() != toolThatOponnentAte
-						&& ((*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() == 'J'
-						|| (*(myGameBoard.getBoardReg()[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1])).getPiece() == 'j')) {
+					if ( myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() != toolThatOponnentAte
+						&& (myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() == 'J'
+						|| myGameBoard[myOccupiedPoints[j].getX() - 1][myOccupiedPoints[j].getY() - 1]->getPiece() == 'j')) {
 
 						fromX = myOccupiedPoints.at(j).getX();
 						fromY = myOccupiedPoints.at(j).getY();
@@ -672,9 +672,9 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 						acuredJokerChange = true;
 						//save data
 						auxPiece.setPosition(fromX, fromY);
-						auxPiece.setPiece((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece());
+						auxPiece.setPiece(myGameBoard[fromX - 1][fromY - 1]->getPiece());
 						auxPiece.setOwner(myPlayerNumber);
-						auxPiece.setJokerRep((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getJokerRep());
+						auxPiece.setJokerRep(myGameBoard[fromX - 1][fromY - 1]->getJokerRep());
 
 						removePointFromOccupiedPoints(src);
 						myGameBoard.setCell(fromX, fromY, NO_PLAYER, '#', '#');
@@ -692,8 +692,8 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 		whichPointToMove = getRandomNumInRange(mySize);
 		fromX = myOccupiedPoints.at(whichPointToMove).getX();
 		fromY = myOccupiedPoints.at(whichPointToMove).getY();
-		while ((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'F' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'f'
-			|| (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'B' || (*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece() == 'b') {
+		while (myGameBoard[fromX - 1][fromY - 1]->getPiece() == 'F' || myGameBoard[fromX - 1][fromY - 1]->getPiece() == 'f'
+			|| myGameBoard[fromX - 1][fromY - 1]->getPiece() == 'B' || myGameBoard[fromX - 1][fromY - 1]->getPiece() == 'b') {
 			whichPointToMove = getRandomNumInRange(mySize);
 			fromX = myOccupiedPoints.at(whichPointToMove).getX();
 			fromY = myOccupiedPoints.at(whichPointToMove).getY();
@@ -722,9 +722,9 @@ unique_ptr<Move> AutoPlayerAlgorithmImp::getMove(){
 
 		//save data
 		auxPiece.setPosition(fromX, fromY);
-		auxPiece.setPiece((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getPiece());
+		auxPiece.setPiece(myGameBoard[fromX - 1][fromY - 1]->getPiece());
 		auxPiece.setOwner(myPlayerNumber);
-		auxPiece.setJokerRep((*(myGameBoard.getBoardReg()[fromX - 1][fromY - 1])).getJokerRep());
+		auxPiece.setJokerRep(myGameBoard[fromX - 1][fromY - 1]->getJokerRep());
 
 		removePointFromOccupiedPoints(src);
 		myGameBoard.setCell(fromX, fromY, NO_PLAYER, '#', '#');

@@ -31,7 +31,7 @@ public:
 	explicit GameStatus() : isPositioningPhase(true), playerOne(make_unique<PlayerStatus>()), playerTwo(make_unique<PlayerStatus>()) {};
 	void printGameStatusToFile(ofstream& outputFile) const;
 	PossibleStatus getGameStatus(int playerNumber) const;
-	void setGameStatus(int playerNumber, PossibleStatus status, int lineNumber = -1, const string& line = "");
+	void setGameStatus(int playerNumber, PossibleStatus status);
 	bool getIsPositioningPhase() const;
 	void setIsPositioningPhase(bool b);
 };
